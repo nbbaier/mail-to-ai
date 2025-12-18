@@ -1,0 +1,42 @@
+# Cloudflare Workers configuration for mail-to-ai
+
+name = "mail-to-ai"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables (secrets should be set via `wrangler secret put`)
+[vars]
+ALLOWED_DOMAIN = "mail-to-ai.com"
+
+# Durable Object bindings for Agents SDK
+[[durable_objects.bindings]]
+name = "ECHO_AGENT"
+class_name = "EchoAgent"
+
+[[durable_objects.bindings]]
+name = "INFO_AGENT"
+class_name = "InfoAgent"
+
+# Durable Object migrations
+[[migrations]]
+tag = "v1"
+new_classes = ["EchoAgent", "InfoAgent"]
+
+# Queue producer binding
+[[queues.producers]]
+queue = "email-processing"
+binding = "EMAIL_QUEUE"
+
+# Queue consumer
+[[queues.consumers]]
+queue = "email-processing"
+max_batch_size = 10
+max_batch_timeout = 30
+max_retries = 3
+dead_letter_queue = "email-processing-dlq"
+
+# Dead letter queue for failed messages
+[[queues.producers]]
+queue = "email-processing-dlq"
+binding = "EMAIL_DLQ"
