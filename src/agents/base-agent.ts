@@ -2,7 +2,8 @@
  * Base agent class for all email agents using Cloudflare Agents SDK
  */
 
-import Anthropic from "@anthropic-ai/sdk";
+import { anthropic } from "@ai-sdk/anthropic";
+import { generateText, type Tool } from "ai";
 import { Agent } from "agents";
 import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
 
@@ -45,8 +46,8 @@ export abstract class BaseAgent extends Agent<Env, EmailAgentState> {
 	/**
 	 * Override for agents that need tools (web search, etc.)
 	 */
-	protected getTools(): Anthropic.Tool[] {
-		return [];
+	protected getTools(): Record<string, Tool> {
+		return {};
 	}
 
 	/**
@@ -95,7 +96,6 @@ ${email.body}`.trim();
 	 * Process the email and generate a response
 	 */
 	async process(email: ParsedEmail): Promise<string> {
-		const anthropic = new Anthropic({ apiKey: this.env.ANTHROPIC_API_KEY });
 		const tools = this.getTools();
 		const userMessage = this.buildUserMessage(email);
 
@@ -109,32 +109,29 @@ ${email.body}`.trim();
 			lastProcessedAt: new Date().toISOString(),
 		});
 
-		const response = await anthropic.messages.create({
-			model: "claude-sonnet-4-20250514",
-			max_tokens: 4096,
+		const { text: responseText } = await generateText({
+			model: anthropic("claude-sonnet-4-20250514"),
+			maxOutputTokens: 4096,
 			system: this.getSystemPrompt(),
 			messages: this.state.conversationHistory.map((msg) => ({
 				role: msg.role,
 				content: msg.content,
 			})),
-			...(tools.length > 0 && { tools }),
+			...(Object.keys(tools).length > 0 && { tools }),
 		});
 
-		// Extract text from response
-		const textBlock = response.content.find((block) => block.type === "text");
-		const responseText =
-			textBlock?.text || "Sorry, I could not generate a response.";
+		const finalText = responseText || "Sorry, I could not generate a response.";
 
 		// Store assistant response in history
 		this.setState({
 			...this.state,
 			conversationHistory: [
 				...this.state.conversationHistory,
-				{ role: "assistant", content: responseText },
+				{ role: "assistant", content: finalText },
 			],
 		});
 
-		return responseText;
+		return finalText;
 	}
 
 	/**
