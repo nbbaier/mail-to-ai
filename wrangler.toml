@@ -3,10 +3,25 @@
 name = "mail-to-ai"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
 
 # Environment variables (secrets should be set via `wrangler secret put`)
 [vars]
 ALLOWED_DOMAIN = "mail-to-ai.com"
+
+# Durable Object bindings for Agents SDK
+[[durable_objects.bindings]]
+name = "ECHO_AGENT"
+class_name = "EchoAgent"
+
+[[durable_objects.bindings]]
+name = "INFO_AGENT"
+class_name = "InfoAgent"
+
+# Durable Object migrations
+[[migrations]]
+tag = "v1"
+new_classes = ["EchoAgent", "InfoAgent"]
 
 # Queue producer binding
 [[queues.producers]]

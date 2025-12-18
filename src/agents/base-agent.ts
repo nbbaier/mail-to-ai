@@ -1,136 +1,198 @@
 /**
- * Base agent class for all email agents
+ * Base agent class for all email agents using Cloudflare Agents SDK
  */
 
-import Anthropic from '@anthropic-ai/sdk';
-import type { ParsedEmail, EmailReply, AgentResult } from '../types';
+import { Agent } from "agents";
+import Anthropic from "@anthropic-ai/sdk";
+import type { AgentResult, EmailReply, ParsedEmail, Env } from "../types";
 
-export abstract class BaseAgent {
-  protected email: ParsedEmail;
-  protected anthropic: Anthropic;
-  protected domain: string;
+/**
+ * State stored in each agent instance
+ */
+export interface EmailAgentState {
+	conversationHistory: Array<{
+		role: "user" | "assistant";
+		content: string;
+	}>;
+	lastProcessedAt?: string;
+}
 
-  constructor(email: ParsedEmail, apiKey: string, domain: string) {
-    this.email = email;
-    this.anthropic = new Anthropic({ apiKey });
-    this.domain = domain;
-  }
+/**
+ * Base class for email agents using Cloudflare Agents SDK
+ */
+export abstract class BaseAgent extends Agent<Env, EmailAgentState> {
+	initialState: EmailAgentState = {
+		conversationHistory: [],
+	};
 
-  /**
-   * Each agent must implement its system prompt
-   */
-  abstract getSystemPrompt(): string;
+	/**
+	 * Each agent must implement its system prompt
+	 */
+	abstract getSystemPrompt(): string;
 
-  /**
-   * Get the agent's email address for replies
-   */
-  abstract getAgentAddress(): string;
+	/**
+	 * Get the agent's email address for replies
+	 */
+	abstract getAgentAddress(): string;
 
-  /**
-   * Get the agent's display name
-   */
-  getAgentName(): string {
-    return 'AI Agent';
-  }
+	/**
+	 * Get the agent's display name
+	 */
+	getAgentName(): string {
+		return "AI Agent";
+	}
 
-  /**
-   * Override for agents that need tools (web search, etc.)
-   */
-  protected getTools(): Anthropic.Tool[] {
-    return [];
-  }
+	/**
+	 * Override for agents that need tools (web search, etc.)
+	 */
+	protected getTools(): Anthropic.Tool[] {
+		return [];
+	}
 
-  /**
-   * Build the user message from the email
-   */
-  protected buildUserMessage(): string {
-    return `Subject: ${this.email.subject}
+	/**
+	 * Build the user message from the email
+	 */
+	protected buildUserMessage(email: ParsedEmail): string {
+		return `Subject: ${email.subject}
 
-From: ${this.email.from.name || this.email.from.email} <${this.email.from.email}>
+From: ${email.from.name || email.from.email} <${email.from.email}>
 
 Message:
-${this.email.body}`.trim();
-  }
+${email.body}`.trim();
+	}
 
-  /**
-   * Process the email and generate a response
-   */
-  async process(): Promise<string> {
-    const tools = this.getTools();
+	/**
+	 * Handle HTTP requests to the agent
+	 */
+	async onRequest(request: Request): Promise<Response> {
+		if (request.method === "POST") {
+			try {
+				const { email } = (await request.json()) as { email: ParsedEmail };
+				const result = await this.generateReply(email);
+				return new Response(JSON.stringify(result), {
+					headers: { "Content-Type": "application/json" },
+				});
+			} catch (error) {
+				return new Response(
+					JSON.stringify({
+						success: false,
+						error: error instanceof Error ? error.message : "Unknown error",
+					}),
+					{
+						status: 500,
+						headers: { "Content-Type": "application/json" },
+					},
+				);
+			}
+		}
 
-    const response = await this.anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
-      system: this.getSystemPrompt(),
-      messages: [
-        {
-          role: 'user',
-          content: this.buildUserMessage(),
-        },
-      ],
-      ...(tools.length > 0 && { tools }),
-    });
+		return new Response(JSON.stringify({ agent: this.getAgentName() }), {
+			headers: { "Content-Type": "application/json" },
+		});
+	}
 
-    // Extract text from response
-    const textBlock = response.content.find((block) => block.type === 'text');
-    return textBlock?.text || 'Sorry, I could not generate a response.';
-  }
+	/**
+	 * Process the email and generate a response
+	 */
+	async process(email: ParsedEmail): Promise<string> {
+		const anthropic = new Anthropic({ apiKey: this.env.ANTHROPIC_API_KEY });
+		const tools = this.getTools();
+		const userMessage = this.buildUserMessage(email);
 
-  /**
-   * Generate the full email reply
-   */
-  async generateReply(): Promise<AgentResult> {
-    try {
-      const responseBody = await this.process();
+		// Add to conversation history
+		this.setState({
+			...this.state,
+			conversationHistory: [
+				...this.state.conversationHistory,
+				{ role: "user", content: userMessage },
+			],
+			lastProcessedAt: new Date().toISOString(),
+		});
 
-      const reply: EmailReply = {
-        to: this.email.from.email,
-        from: `${this.getAgentName()} <${this.getAgentAddress()}>`,
-        subject: this.email.subject.startsWith('Re:')
-          ? this.email.subject
-          : `Re: ${this.email.subject}`,
-        body: responseBody,
-        html: this.formatAsHtml(responseBody),
-        inReplyTo: this.email.messageId,
-        references: [...this.email.references, this.email.messageId],
-      };
+		const response = await anthropic.messages.create({
+			model: "claude-sonnet-4-20250514",
+			max_tokens: 4096,
+			system: this.getSystemPrompt(),
+			messages: this.state.conversationHistory.map((msg) => ({
+				role: msg.role,
+				content: msg.content,
+			})),
+			...(tools.length > 0 && { tools }),
+		});
 
-      return { success: true, reply };
-    } catch (error) {
-      console.error(`Agent ${this.constructor.name} failed:`, error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
-    }
-  }
+		// Extract text from response
+		const textBlock = response.content.find((block) => block.type === "text");
+		const responseText =
+			textBlock?.text || "Sorry, I could not generate a response.";
 
-  /**
-   * Convert plain text response to HTML
-   */
-  protected formatAsHtml(text: string): string {
-    // Convert markdown-style formatting
-    let html = text
-      // Code blocks
-      .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-      // Inline code
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      // Bold
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      // Italic
-      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-      // Links
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+		// Store assistant response in history
+		this.setState({
+			...this.state,
+			conversationHistory: [
+				...this.state.conversationHistory,
+				{ role: "assistant", content: responseText },
+			],
+		});
 
-    // Convert paragraphs
-    const paragraphs = html.split('\n\n');
-    const htmlParagraphs = paragraphs.map((p) => {
-      // Don't wrap pre blocks in paragraphs
-      if (p.includes('<pre>')) return p;
-      return `<p>${p.replace(/\n/g, '<br>')}</p>`;
-    });
+		return responseText;
+	}
 
-    return `<!DOCTYPE html>
+	/**
+	 * Generate the full email reply
+	 */
+	async generateReply(email: ParsedEmail): Promise<AgentResult> {
+		try {
+			const responseBody = await this.process(email);
+			const domain = this.env.ALLOWED_DOMAIN;
+
+			const reply: EmailReply = {
+				to: email.from.email,
+				from: `${this.getAgentName()} <${this.getAgentAddress().replace("DOMAIN", domain)}>`,
+				subject: email.subject.startsWith("Re:")
+					? email.subject
+					: `Re: ${email.subject}`,
+				body: responseBody,
+				html: this.formatAsHtml(responseBody),
+				inReplyTo: email.messageId,
+				references: [...email.references, email.messageId],
+			};
+
+			return { success: true, reply };
+		} catch (error) {
+			console.error(`Agent ${this.constructor.name} failed:`, error);
+			return {
+				success: false,
+				error: error instanceof Error ? error.message : "Unknown error",
+			};
+		}
+	}
+
+	/**
+	 * Convert plain text response to HTML
+	 */
+	protected formatAsHtml(text: string): string {
+		// Convert markdown-style formatting
+		const html = text
+			// Code blocks
+			.replace(/```(\w*)\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
+			// Inline code
+			.replace(/`([^`]+)`/g, "<code>$1</code>")
+			// Bold
+			.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+			// Italic
+			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+			// Links
+			.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+
+		// Convert paragraphs
+		const paragraphs = html.split("\n\n");
+		const htmlParagraphs = paragraphs.map((p) => {
+			// Don't wrap pre blocks in paragraphs
+			if (p.includes("<pre>")) return p;
+			return `<p>${p.replace(/\n/g, "<br>")}</p>`;
+		});
+
+		return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -159,7 +221,7 @@ ${this.email.body}`.trim();
   </style>
 </head>
 <body>
-  ${htmlParagraphs.join('\n  ')}
+  ${htmlParagraphs.join("\n  ")}
 
   <hr style="margin: 2em 0; border: none; border-top: 1px solid #ddd;">
   <p style="color: #666; font-size: 0.9em;">
@@ -167,5 +229,5 @@ ${this.email.body}`.trim();
   </p>
 </body>
 </html>`.trim();
-  }
+	}
 }

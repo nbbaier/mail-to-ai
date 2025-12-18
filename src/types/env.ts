@@ -7,6 +7,10 @@ export interface Env {
   EMAIL_QUEUE: Queue<QueueMessage>;
   EMAIL_DLQ: Queue<QueueMessage>;
 
+  // Durable Object bindings for Agents SDK
+  ECHO_AGENT: DurableObjectNamespace;
+  INFO_AGENT: DurableObjectNamespace;
+
   // Environment variables (set in wrangler.toml)
   ALLOWED_DOMAIN: string;
 
