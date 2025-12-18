@@ -39,11 +39,9 @@ export async function checkRateLimit(
 		windowStart = now;
 	}
 
-	await kv.put(
-		key,
-		JSON.stringify({ count, windowStart }),
-		{ expirationTtl: windowSeconds },
-	);
+	await kv.put(key, JSON.stringify({ count, windowStart }), {
+		expirationTtl: windowSeconds,
+	});
 
 	const resetAt = new Date(windowStart + windowSeconds * 1000);
 
@@ -84,7 +82,7 @@ export async function cacheAgentPrompt(
  */
 export async function incrementEmailCount(kv: KVNamespace): Promise<number> {
 	const key = "stats:total-emails";
-	const current = await kv.get<number>(key, "json") || 0;
+	const current = (await kv.get<number>(key, "json")) || 0;
 	const newCount = current + 1;
 	await kv.put(key, JSON.stringify(newCount));
 	return newCount;
@@ -106,7 +104,10 @@ export async function trackAgentUsage(
 	const today = new Date().toISOString().split("T")[0];
 	const key = `stats:agent:${agentType}:${today}`;
 
-	const existing = await kv.get<AgentStats>(key, "json") || { count: 0, totalTime: 0 };
+	const existing = (await kv.get<AgentStats>(key, "json")) || {
+		count: 0,
+		totalTime: 0,
+	};
 
 	const updated: AgentStats = {
 		count: existing.count + 1,

@@ -2,9 +2,9 @@
  * Base agent class for all email agents using Cloudflare Agents SDK
  */
 
-import { Agent } from "agents";
 import Anthropic from "@anthropic-ai/sdk";
-import type { AgentResult, EmailReply, ParsedEmail, Env } from "../types";
+import { Agent } from "agents";
+import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
 
 /**
  * State stored in each agent instance
