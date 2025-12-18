@@ -13,9 +13,10 @@
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
-		"@anthropic-ai/sdk": "^0.39.0",
+		"@ai-sdk/anthropic": "^2.0.56",
 		"@inboundemail/sdk": "^4.0.0",
 		"agents": "^0.2.32",
+		"ai": "^5.0.115",
 		"alchemy": "^0.81.4",
 		"hono": "^4.6.0",
 		"inboundemail": "^0.19.0"
@@ -24,6 +25,6 @@
 		"@cloudflare/workers-types": "^4.20241205.0",
 		"typescript": "^5.7.2",
 		"vitest": "^2.1.8",
-		"wrangler": "^3.99.0"
+		"wrangler": "^4.42.2"
 	}
 }
