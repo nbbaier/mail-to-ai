@@ -2,17 +2,19 @@
  * Agent router - maps email addresses to the appropriate agent via Durable Objects
  */
 
-import type { ParsedEmail, Env, AgentResult } from "../types";
+import type { AgentResult, Env, ParsedEmail } from "../types";
 import { extractAgentName } from "../utils/email-parser";
 
 /**
  * Registry mapping agent names to their DO binding keys
  */
-const AGENT_REGISTRY: Map<string, keyof Pick<Env, "ECHO_AGENT" | "INFO_AGENT">> =
-	new Map([
-		["echo", "ECHO_AGENT"],
-		["info", "INFO_AGENT"],
-	]);
+const AGENT_REGISTRY: Map<
+	string,
+	keyof Pick<Env, "ECHO_AGENT" | "INFO_AGENT">
+> = new Map([
+	["echo", "ECHO_AGENT"],
+	["info", "INFO_AGENT"],
+]);
 
 /**
  * Route an email to the appropriate agent and process it

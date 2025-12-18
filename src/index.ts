@@ -4,10 +4,10 @@
  * A Cloudflare Workers application that provides AI agents accessible via email.
  */
 
+import { Inbound } from "@inboundemail/sdk";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { Inbound } from "@inboundemail/sdk";
 import { webhook } from "./routes/webhook";
 import { processEmail } from "./services/email-processor";
 import type { Env, QueueMessage } from "./types";
@@ -56,9 +56,8 @@ export default {
 	async queue(
 		batch: MessageBatch<QueueMessage>,
 		env: Env,
-		ctx: ExecutionContext,
+		_ctx: ExecutionContext,
 	): Promise<void> {
-		// Initialize dependencies
 		const inbound = new Inbound(env.INBOUND_API_KEY);
 
 		const deps = {
