@@ -40,3 +40,8 @@ dead_letter_queue = "email-processing-dlq"
 [[queues.producers]]
 queue = "email-processing-dlq"
 binding = "EMAIL_DLQ"
+
+# KV namespace for caching and rate limiting
+[[kv_namespaces]]
+binding = "CACHE_KV"
+id = "39ca9c8215ed44829cd1a2a4320d40fe"

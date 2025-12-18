@@ -1,23 +1,16 @@
 /**
- * Rate limiting utilities using Upstash Redis
+ * Rate limiting utilities using Cloudflare KV
  */
-
-import { Redis } from '@upstash/redis';
 
 export interface RateLimitResult {
-  allowed: boolean;
-  remaining: number;
-  resetAt: Date;
+	allowed: boolean;
+	remaining: number;
+	resetAt: Date;
 }
 
-/**
- * Create a Redis client from environment variables
- */
-export function createRedisClient(url: string, token: string): Redis {
-  return new Redis({
-    url,
-    token,
-  });
+interface RateLimitData {
+	count: number;
+	windowStart: number;
 }
 
 /**
@@ -25,88 +18,100 @@ export function createRedisClient(url: string, token: string): Redis {
  * Default: 10 emails per hour
  */
 export async function checkRateLimit(
-  redis: Redis,
-  senderEmail: string,
-  limit: number = 10,
-  windowSeconds: number = 3600
+	kv: KVNamespace,
+	senderEmail: string,
+	limit: number = 10,
+	windowSeconds: number = 3600,
 ): Promise<RateLimitResult> {
-  const key = `ratelimit:${senderEmail}`;
-  const now = Date.now();
+	const key = `ratelimit:${senderEmail}`;
+	const now = Date.now();
 
-  // Use Redis pipeline for atomic operations
-  const pipeline = redis.pipeline();
+	const existing = await kv.get<RateLimitData>(key, "json");
 
-  // Increment counter
-  pipeline.incr(key);
-  // Get TTL to know when it resets
-  pipeline.ttl(key);
+	let count: number;
+	let windowStart: number;
 
-  const results = await pipeline.exec<[number, number]>();
-  const current = results[0];
-  const ttl = results[1];
+	if (existing && now - existing.windowStart < windowSeconds * 1000) {
+		count = existing.count + 1;
+		windowStart = existing.windowStart;
+	} else {
+		count = 1;
+		windowStart = now;
+	}
 
-  // If this is the first request, set expiry
-  if (current === 1) {
-    await redis.expire(key, windowSeconds);
-  }
+	await kv.put(
+		key,
+		JSON.stringify({ count, windowStart }),
+		{ expirationTtl: windowSeconds },
+	);
 
-  const resetAt = new Date(now + (ttl > 0 ? ttl * 1000 : windowSeconds * 1000));
+	const resetAt = new Date(windowStart + windowSeconds * 1000);
 
-  return {
-    allowed: current <= limit,
-    remaining: Math.max(0, limit - current),
-    resetAt,
-  };
+	return {
+		allowed: count <= limit,
+		remaining: Math.max(0, limit - count),
+		resetAt,
+	};
 }
 
 /**
- * Get cached agent prompt from Redis
+ * Get cached agent prompt from KV
  */
 export async function getCachedAgentPrompt(
-  redis: Redis,
-  agentAddress: string
+	kv: KVNamespace,
+	agentAddress: string,
 ): Promise<string | null> {
-  const key = `agent-prompt:${agentAddress}`;
-  return redis.get<string>(key);
+	const key = `agent-prompt:${agentAddress}`;
+	return kv.get(key);
 }
 
 /**
- * Cache agent prompt in Redis
+ * Cache agent prompt in KV
  * Default: 7 days TTL
  */
 export async function cacheAgentPrompt(
-  redis: Redis,
-  agentAddress: string,
-  prompt: string,
-  ttlSeconds: number = 604800 // 7 days
+	kv: KVNamespace,
+	agentAddress: string,
+	prompt: string,
+	ttlSeconds: number = 604800,
 ): Promise<void> {
-  const key = `agent-prompt:${agentAddress}`;
-  await redis.setex(key, ttlSeconds, prompt);
+	const key = `agent-prompt:${agentAddress}`;
+	await kv.put(key, prompt, { expirationTtl: ttlSeconds });
 }
 
 /**
  * Increment total emails counter for stats
  */
-export async function incrementEmailCount(redis: Redis): Promise<number> {
-  return redis.incr('stats:total-emails');
+export async function incrementEmailCount(kv: KVNamespace): Promise<number> {
+	const key = "stats:total-emails";
+	const current = await kv.get<number>(key, "json") || 0;
+	const newCount = current + 1;
+	await kv.put(key, JSON.stringify(newCount));
+	return newCount;
+}
+
+interface AgentStats {
+	count: number;
+	totalTime: number;
 }
 
 /**
  * Track agent usage
  */
 export async function trackAgentUsage(
-  redis: Redis,
-  agentType: string,
-  processingTimeMs: number
+	kv: KVNamespace,
+	agentType: string,
+	processingTimeMs: number,
 ): Promise<void> {
-  const today = new Date().toISOString().split('T')[0];
-  const key = `stats:agent:${agentType}:${today}`;
+	const today = new Date().toISOString().split("T")[0];
+	const key = `stats:agent:${agentType}:${today}`;
 
-  // Increment count and add to processing time
-  const pipeline = redis.pipeline();
-  pipeline.hincrby(key, 'count', 1);
-  pipeline.hincrbyfloat(key, 'totalTime', processingTimeMs);
-  pipeline.expire(key, 86400 * 30); // Keep for 30 days
+	const existing = await kv.get<AgentStats>(key, "json") || { count: 0, totalTime: 0 };
 
-  await pipeline.exec();
+	const updated: AgentStats = {
+		count: existing.count + 1,
+		totalTime: existing.totalTime + processingTimeMs,
+	};
+
+	await kv.put(key, JSON.stringify(updated), { expirationTtl: 86400 * 30 });
 }

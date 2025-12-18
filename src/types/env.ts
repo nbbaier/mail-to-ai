@@ -11,6 +11,9 @@ export interface Env {
   ECHO_AGENT: DurableObjectNamespace;
   INFO_AGENT: DurableObjectNamespace;
 
+  // KV namespace for caching and rate limiting
+  CACHE_KV: KVNamespace;
+
   // Environment variables (set in wrangler.toml)
   ALLOWED_DOMAIN: string;
 
@@ -18,8 +21,6 @@ export interface Env {
   INBOUND_API_KEY: string;
   INBOUND_WEBHOOK_SECRET: string;
   ANTHROPIC_API_KEY: string;
-  UPSTASH_REDIS_REST_URL: string;
-  UPSTASH_REDIS_REST_TOKEN: string;
 }
 
 import type { QueueMessage } from './email';

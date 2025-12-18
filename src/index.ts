@@ -10,7 +10,6 @@ import { logger } from "hono/logger";
 import { Inbound } from "@inboundemail/sdk";
 import { webhook } from "./routes/webhook";
 import { processEmail } from "./services/email-processor";
-import { createRedisClient } from "./utils/rate-limiter";
 import type { Env, QueueMessage } from "./types";
 
 // Export Durable Object agent classes for Cloudflare
@@ -60,14 +59,10 @@ export default {
 		ctx: ExecutionContext,
 	): Promise<void> {
 		// Initialize dependencies
-		const redis = createRedisClient(
-			env.UPSTASH_REDIS_REST_URL,
-			env.UPSTASH_REDIS_REST_TOKEN,
-		);
 		const inbound = new Inbound(env.INBOUND_API_KEY);
 
 		const deps = {
-			redis,
+			kv: env.CACHE_KV,
 			inbound,
 			env,
 		};

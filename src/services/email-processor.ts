@@ -3,8 +3,7 @@
  */
 
 import type { Inbound } from "@inboundemail/sdk";
-import type { Redis } from "@upstash/redis";
-import type { ParsedEmail, Env } from "../types";
+import type { Env, ParsedEmail } from "../types";
 import { extractAgentName } from "../utils/email-parser";
 import {
 	checkRateLimit,
@@ -19,7 +18,7 @@ import {
 } from "./email-sender";
 
 export interface ProcessorDependencies {
-	redis: Redis;
+	kv: KVNamespace;
 	inbound: Inbound;
 	env: Env;
 }
@@ -38,7 +37,7 @@ export async function processEmail(
 
 	try {
 		// 1. Check rate limit
-		const rateLimit = await checkRateLimit(deps.redis, email.from.email);
+		const rateLimit = await checkRateLimit(deps.kv, email.from.email);
 		if (!rateLimit.allowed) {
 			console.log(`Rate limit exceeded for ${email.from.email}`);
 			await sendRateLimitEmail(
@@ -68,8 +67,8 @@ export async function processEmail(
 		// 4. Track metrics
 		const processingTime = Date.now() - startTime;
 		await Promise.all([
-			incrementEmailCount(deps.redis),
-			trackAgentUsage(deps.redis, agentName, processingTime),
+			incrementEmailCount(deps.kv),
+			trackAgentUsage(deps.kv, agentName, processingTime),
 		]);
 
 		console.log(
