@@ -1,0 +1,27 @@
+# Cloudflare Workers configuration for mail-to-ai
+
+name = "mail-to-ai"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# Environment variables (secrets should be set via `wrangler secret put`)
+[vars]
+ALLOWED_DOMAIN = "mail-to-ai.com"
+
+# Queue producer binding
+[[queues.producers]]
+queue = "email-processing"
+binding = "EMAIL_QUEUE"
+
+# Queue consumer
+[[queues.consumers]]
+queue = "email-processing"
+max_batch_size = 10
+max_batch_timeout = 30
+max_retries = 3
+dead_letter_queue = "email-processing-dlq"
+
+# Dead letter queue for failed messages
+[[queues.producers]]
+queue = "email-processing-dlq"
+binding = "EMAIL_DLQ"
