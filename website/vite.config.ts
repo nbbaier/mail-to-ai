@@ -1,8 +1,8 @@
-import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
 import alchemy from "alchemy/cloudflare/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), alchemy()],
+	plugins: [react(), tailwindcss(), alchemy()],
 });
