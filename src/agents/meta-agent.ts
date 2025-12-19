@@ -104,7 +104,7 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 		if (this.cachedInstruction) {
 			// Capitalize first letter of instruction for display name
 			const name = this.cachedInstruction;
-			return name.charAt(0).toUpperCase() + name.slice(1) + " Agent";
+			return `${name.charAt(0).toUpperCase() + name.slice(1)} Agent`;
 		}
 		return "Meta Agent";
 	}

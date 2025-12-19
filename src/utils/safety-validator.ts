@@ -30,10 +30,10 @@ const UNSAFE_ADDRESS_PATTERNS = [
 	/ddos/i,
 	/ransomware/i,
 	/keylog/i,
-	/child/i,
-	/porn/i,
-	/nude/i,
-	/sex/i,
+	/\bchild\b/i,
+	/\bporn\b/i,
+	/\bnude\b/i,
+	/\bsex\b/i,
 ];
 
 const PROMPT_INJECTION_PATTERNS = [

@@ -28,7 +28,6 @@ Or create a custom agent by emailing any address (coming soon):
 
 - Node.js 18+ or Bun
 - Cloudflare account (for Workers and Queues)
-- Upstash account (for Redis)
 - Inbound.new account (for email)
 - Anthropic API key (for Claude)
 
@@ -53,8 +52,6 @@ Set these as secrets in Cloudflare:
 wrangler secret put INBOUND_API_KEY
 wrangler secret put INBOUND_WEBHOOK_SECRET
 wrangler secret put ANTHROPIC_API_KEY
-wrangler secret put UPSTASH_REDIS_REST_URL
-wrangler secret put UPSTASH_REDIS_REST_TOKEN
 ```
 
 ### Deployment
@@ -109,7 +106,7 @@ npm run deploy
 | Backend          | Cloudflare Workers |
 | Framework        | Hono               |
 | Queue            | Cloudflare Queues  |
-| Cache/Rate Limit | Upstash Redis      |
+| Cache/Rate Limit | Cloudflare KV      |
 | AI/LLM           | Claude (Anthropic) |
 
 ## License

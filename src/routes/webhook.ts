@@ -3,8 +3,10 @@
  */
 
 import {
+	Inbound,
 	type InboundWebhookPayload,
 	isInboundWebhook,
+	verifyWebhookFromHeaders,
 } from "@inboundemail/sdk";
 import { Hono } from "hono";
 import type { Env, QueueMessage } from "../types";
@@ -20,6 +22,14 @@ webhook.post("/inbound", async (c) => {
 	const startTime = Date.now();
 
 	try {
+		// Verify webhook signature
+		const inbound = new Inbound(c.env.INBOUND_API_KEY);
+		const isValid = await verifyWebhookFromHeaders(c.req.raw.headers, inbound);
+		if (!isValid) {
+			console.error("Webhook signature verification failed");
+			return c.json({ error: "Unauthorized" }, 401);
+		}
+
 		// Parse the webhook payload
 		const payload = (await c.req.json()) as InboundWebhookPayload;
 
