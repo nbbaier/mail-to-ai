@@ -1,0 +1,179 @@
+/**
+ * Meta Agent - Dynamically creates agent behavior from email address
+ *
+ * Interprets arbitrary email addresses as task instructions.
+ * e.g., "write-haiku-about-cats@domain.com" creates an agent that writes haikus about cats
+ */
+
+import { anthropic } from "@ai-sdk/anthropic";
+import { generateText } from "ai";
+import type { ParsedEmail } from "../types";
+import { BaseAgent } from "./base-agent";
+
+export class MetaAgent extends BaseAgent {
+	/**
+	 * Cache for the generated system prompt (per instance)
+	 */
+	private cachedInstruction = "";
+	private cachedSystemPrompt = "";
+
+	/**
+	 * The address that triggered this meta-agent instance
+	 * Will be set during processing
+	 */
+	private currentAddress = "";
+
+	/**
+	 * Parse email address to human-readable instruction
+	 * "write-haiku-about-cats" -> "write haiku about cats"
+	 */
+	private parseAddressToInstruction(address: string): string {
+		// Extract local part (before @)
+		const localPart = address.split("@")[0];
+
+		// Replace hyphens and underscores with spaces
+		const instruction = localPart.replace(/[-_]+/g, " ").trim();
+
+		return instruction;
+	}
+
+	/**
+	 * Generate a system prompt from the instruction using Claude
+	 */
+	private async generateSystemPromptFromInstruction(
+		instruction: string,
+	): Promise<string> {
+		const { text } = await generateText({
+			model: anthropic("claude-sonnet-4-20250514"),
+			maxOutputTokens: 1024,
+			system: `You are a prompt engineer. Your task is to create a system prompt for an AI assistant based on a short instruction.
+
+The instruction describes what the AI assistant should do when receiving emails. Create a clear, focused system prompt that:
+1. Defines the assistant's role based on the instruction
+2. Provides clear guidelines for responding to emails
+3. Maintains a helpful and professional tone
+4. Is specific to the task without being overly restrictive
+
+Output ONLY the system prompt text, nothing else. Do not include any explanations or metadata.`,
+			messages: [
+				{
+					role: "user",
+					content: `Create a system prompt for an AI email assistant with this instruction: "${instruction}"`,
+				},
+			],
+		});
+
+		return (
+			text ||
+			`You are a helpful AI assistant. Your task is to: ${instruction}. Respond to emails professionally and helpfully.`
+		);
+	}
+
+	/**
+	 * Get the system prompt - either from cache or generate new
+	 */
+	getSystemPrompt(): string {
+		// Return cached prompt if available
+		if (this.cachedSystemPrompt) {
+			return this.cachedSystemPrompt;
+		}
+
+		// Fallback for when prompt hasn't been generated yet
+		return `You are a helpful AI assistant. Respond to emails professionally and helpfully.`;
+	}
+
+	getAgentAddress(): string {
+		// Use the original address that created this agent
+		return this.currentAddress || `agent@${this.env.ALLOWED_DOMAIN}`;
+	}
+
+	getAgentName(): string {
+		if (this.cachedInstruction) {
+			// Capitalize first letter of instruction for display name
+			const name = this.cachedInstruction;
+			return name.charAt(0).toUpperCase() + name.slice(1) + " Agent";
+		}
+		return "Meta Agent";
+	}
+
+	/**
+	 * Override process to handle dynamic prompt generation
+	 */
+	async process(email: ParsedEmail): Promise<string> {
+		const startTime = Date.now();
+
+		// Set the current address for this request
+		this.currentAddress = email.to;
+
+		// Parse the instruction from the email address
+		const instruction = this.parseAddressToInstruction(email.to);
+
+		// Check if we need to generate a new system prompt
+		// (first time or if instruction changed)
+		const promptCached = this.cachedInstruction === instruction && this.cachedSystemPrompt !== "";
+
+		if (!promptCached) {
+			console.log(
+				`MetaAgent: Generating prompt for instruction: "${instruction}"`,
+			);
+
+			const generatedPrompt =
+				await this.generateSystemPromptFromInstruction(instruction);
+
+			this.cachedInstruction = instruction;
+			this.cachedSystemPrompt = generatedPrompt;
+
+			console.log(`MetaAgent: Generated prompt (${generatedPrompt.length} chars)`);
+		}
+
+		// Build the user message
+		const userMessage = this.buildUserMessage(email);
+
+		// Add to conversation history
+		this.setState({
+			...this.state,
+			conversationHistory: [
+				...this.state.conversationHistory,
+				{ role: "user", content: userMessage },
+			],
+			lastProcessedAt: new Date().toISOString(),
+		});
+
+		// Generate response using the dynamic system prompt
+		const { text: responseText } = await generateText({
+			model: anthropic("claude-sonnet-4-20250514"),
+			maxOutputTokens: 4096,
+			system: this.cachedSystemPrompt,
+			messages: this.state.conversationHistory.map((msg) => ({
+				role: msg.role,
+				content: msg.content,
+			})),
+		});
+
+		const finalText = responseText || "Sorry, I could not generate a response.";
+
+		// Store assistant response in history
+		this.setState({
+			...this.state,
+			conversationHistory: [
+				...this.state.conversationHistory,
+				{ role: "assistant", content: finalText },
+			],
+		});
+
+		// Structured logging
+		console.log(
+			JSON.stringify({
+				agent: "MetaAgent",
+				instruction,
+				emailId: email.id,
+				from: email.from.email,
+				promptCached,
+				responseTime: Date.now() - startTime,
+				timestamp: new Date().toISOString(),
+			}),
+		);
+
+		return finalText;
+	}
+}

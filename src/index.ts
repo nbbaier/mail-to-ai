@@ -15,6 +15,7 @@ import type { Env, QueueMessage } from "./types";
 // Export Durable Object agent classes for Cloudflare
 export { EchoAgent } from "./agents/echo-agent";
 export { InfoAgent } from "./agents/info-agent";
+export { MetaAgent } from "./agents/meta-agent";
 export { ResearchAgent } from "./agents/research-agent";
 export { SummarizeAgent } from "./agents/summarize-agent";
 

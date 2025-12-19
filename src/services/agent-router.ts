@@ -10,7 +10,7 @@ import { extractAgentName } from "../utils/email-parser";
  */
 const AGENT_REGISTRY: Map<
 	string,
-	keyof Pick<Env, "ECHO_AGENT" | "INFO_AGENT" | "RESEARCH_AGENT" | "SUMMARIZE_AGENT">
+	keyof Pick<Env, "ECHO_AGENT" | "INFO_AGENT" | "META_AGENT" | "RESEARCH_AGENT" | "SUMMARIZE_AGENT">
 > = new Map([
 	["echo", "ECHO_AGENT"],
 	["info", "INFO_AGENT"],
@@ -30,8 +30,9 @@ export async function routeToAgent(
 	// Determine which DO binding to use
 	let bindingKey = AGENT_REGISTRY.get(agentName);
 	if (!bindingKey) {
-		console.log(`Unknown agent "${agentName}", falling back to info agent`);
-		bindingKey = "INFO_AGENT";
+		// Unknown agent address - use MetaAgent to interpret it dynamically
+		console.log(`Unknown agent "${agentName}", using MetaAgent to interpret`);
+		bindingKey = "META_AGENT";
 	} else {
 		console.log(`Routing to agent: ${agentName}`);
 	}

@@ -18,10 +18,26 @@ class_name = "EchoAgent"
 name = "INFO_AGENT"
 class_name = "InfoAgent"
 
+[[durable_objects.bindings]]
+name = "META_AGENT"
+class_name = "MetaAgent"
+
+[[durable_objects.bindings]]
+name = "RESEARCH_AGENT"
+class_name = "ResearchAgent"
+
+[[durable_objects.bindings]]
+name = "SUMMARIZE_AGENT"
+class_name = "SummarizeAgent"
+
 # Durable Object migrations
 [[migrations]]
 tag = "v1"
 new_classes = ["EchoAgent", "InfoAgent"]
+
+[[migrations]]
+tag = "v2"
+new_classes = ["ResearchAgent", "SummarizeAgent", "MetaAgent"]
 
 # Queue producer binding
 [[queues.producers]]
