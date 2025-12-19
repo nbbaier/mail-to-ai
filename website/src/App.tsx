@@ -9,7 +9,7 @@ import { type RefObject, useEffect, useRef } from "react";
 
 const DOMAIN = "mail-to-ai.com";
 
-function useScrollReveal<T extends HTMLElement>(): RefObject<T | null> {
+export function useScrollReveal<T extends HTMLElement>(): RefObject<T | null> {
 	const ref = useRef<T>(null);
 
 	useEffect(() => {
@@ -265,7 +265,7 @@ function BuiltInAgents() {
 							icon={<HugeiconsIcon icon={Search02Icon} />}
 							description="Multi-source web research with synthesis, citations, and structured reports. Perfect for competitive analysis, market research, technical deep-dives."
 							example='"Compare the pricing models and target markets of the top 5 project management tools used by remote teams in 2024"'
-							time="30-120 min typical"
+							// time="30-120 min typical"
 						/>
 					</div>
 
@@ -279,7 +279,7 @@ function BuiltInAgents() {
 							icon={<HugeiconsIcon icon={File02Icon} />}
 							description="Intelligent summarization of long email threads, articles, documents. Extracts key points, action items, decisions made."
 							example='Forward a 52-email thread: "Summarize this discussion and tell me what we decided about the launch timeline"'
-							time="5-20 min typical"
+							// time="5-20 min typical"
 						/>
 					</div>
 				</div>
@@ -314,7 +314,7 @@ interface AgentCardProps {
 	icon: React.ReactNode;
 	description: string;
 	example: string;
-	time: string;
+	time?: string;
 }
 
 function AgentCard({
@@ -378,23 +378,28 @@ function AgentCard({
 			</div>
 
 			<div className="flex items-center justify-between text-sm mt-auto">
-				<div className="flex items-center gap-2 text-slate-500">
-					<svg
-						className="w-4 h-4"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<title>Clock icon</title>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth="2"
-							d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-					<span>{time}</span>
-				</div>
+				{time ? (
+					<div className="flex items-center gap-2 text-slate-500">
+						<svg
+							className="w-4 h-4"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<title>Clock icon</title>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
+						</svg>
+						<span>{time}</span>
+					</div>
+				) : (
+					<span className="flex-1"></span>
+				)}
+
 				<a
 					href={`mailto:${email}`}
 					className="text-cyan-600 font-semibold hover:text-cyan-700 flex items-center gap-1"
@@ -538,52 +543,6 @@ function CustomAgents() {
 	);
 }
 
-function UseCases() {
-	const ref = useScrollReveal<HTMLElement>();
-
-	const cases = [
-		{
-			title: "Founders & Executives",
-			desc: "Queue up competitive analysis, market research, and strategic reports in the morning. Review completed work in the afternoon.",
-		},
-		{
-			title: "Researchers & Analysts",
-			desc: "Send multiple research requests overnight. Wake up to comprehensive reports with citations ready for review.",
-		},
-		{
-			title: "Writers & Creators",
-			desc: "Delegate background research and fact-checking while you focus on creating. Get sourced information delivered to your inbox.",
-		},
-	];
-
-	return (
-		<section ref={ref} className="py-20 bg-white">
-			<div className="max-w-6xl mx-auto px-6">
-				<div className="text-center mb-16 fade-in-up">
-					<h2 className="text-4xl font-bold mb-4 font-display">
-						Built for people who value their time
-					</h2>
-					<p className="text-xl text-slate-600">
-						Delegate work that takes hours, not minutes
-					</p>
-				</div>
-
-				<div className="grid md:grid-cols-3 gap-8">
-					{cases.map(({ title, desc }, i) => (
-						<div
-							key={title}
-							className={`bg-slate-50 rounded-2xl p-8 border border-slate-200 fade-in-up stagger-${i + 1}`}
-						>
-							<h3 className="font-bold text-xl mb-3 font-display">{title}</h3>
-							<p className="text-slate-600 text-sm leading-relaxed">{desc}</p>
-						</div>
-					))}
-				</div>
-			</div>
-		</section>
-	);
-}
-
 function FinalCTA() {
 	return (
 		<section
@@ -695,7 +654,6 @@ export default function App() {
 			<ProblemSolution />
 			<BuiltInAgents />
 			<CustomAgents />
-			<UseCases />
 			<FinalCTA />
 			<Footer />
 		</div>

@@ -19,7 +19,8 @@
 		"ai": "^5.0.115",
 		"alchemy": "^0.81.4",
 		"hono": "^4.6.0",
-		"inboundemail": "^0.19.0"
+		"inboundemail": "^0.19.0",
+		"marked": "^17.0.1"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.10",

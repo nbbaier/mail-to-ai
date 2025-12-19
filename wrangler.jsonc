@@ -1,78 +1,80 @@
 {
-	"name": "mail-to-ai-dev",
-	"main": "src/index.ts",
-	"compatibility_date": "2024-12-01",
-	"compatibility_flags": ["nodejs_compat"],
-	"vars": {
-		"ALLOWED_DOMAIN": "mail-to-ai.com"
-	},
-	"kv_namespaces": [
-		{
-			"binding": "CACHE_KV",
-			"id": "8ef5ef68d0c7439ba06e21b8a9968f20",
-			"preview_id": "8ef5ef68d0c7439ba06e21b8a9968f20"
-		}
-	],
-	"durable_objects": {
-		"bindings": [
-			{
-				"name": "ECHO_AGENT",
-				"class_name": "EchoAgent",
-				"script_name": "mail-to-ai-dev"
-			},
-			{
-				"name": "INFO_AGENT",
-				"class_name": "InfoAgent",
-				"script_name": "mail-to-ai-dev"
-			},
-			{
-				"name": "RESEARCH_AGENT",
-				"class_name": "ResearchAgent",
-				"script_name": "mail-to-ai-dev"
-			},
-			{
-				"name": "SUMMARIZE_AGENT",
-				"class_name": "SummarizeAgent",
-				"script_name": "mail-to-ai-dev"
-			},
-			{
-				"name": "META_AGENT",
-				"class_name": "MetaAgent",
-				"script_name": "mail-to-ai-dev"
-			}
-		]
-	},
-	"queues": {
-		"consumers": [
-			{
-				"queue": "mail-to-ai-dev-email-processing",
-				"max_batch_size": 10,
-				"max_retries": 3,
-				"max_batch_timeout": 30
-			}
-		],
-		"producers": [
-			{
-				"binding": "EMAIL_QUEUE",
-				"queue": "658375bff4da42b89bb129f59e729aef"
-			},
-			{
-				"binding": "EMAIL_DLQ",
-				"queue": "b22ed96dc2a941219026936d4e26328f"
-			}
-		]
-	},
-	"migrations": [
-		{
-			"tag": "v1",
-			"new_sqlite_classes": [
-				"EchoAgent",
-				"InfoAgent",
-				"ResearchAgent",
-				"SummarizeAgent",
-				"MetaAgent"
-			],
-			"new_classes": []
-		}
-	]
+  "name": "mail-to-ai-dev",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-12-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "ALLOWED_DOMAIN": "mail-to-ai.com"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "CACHE_KV",
+      "id": "8ef5ef68d0c7439ba06e21b8a9968f20",
+      "preview_id": "8ef5ef68d0c7439ba06e21b8a9968f20"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ECHO_AGENT",
+        "class_name": "EchoAgent",
+        "script_name": "mail-to-ai-dev"
+      },
+      {
+        "name": "INFO_AGENT",
+        "class_name": "InfoAgent",
+        "script_name": "mail-to-ai-dev"
+      },
+      {
+        "name": "RESEARCH_AGENT",
+        "class_name": "ResearchAgent",
+        "script_name": "mail-to-ai-dev"
+      },
+      {
+        "name": "SUMMARIZE_AGENT",
+        "class_name": "SummarizeAgent",
+        "script_name": "mail-to-ai-dev"
+      },
+      {
+        "name": "META_AGENT",
+        "class_name": "MetaAgent",
+        "script_name": "mail-to-ai-dev"
+      }
+    ]
+  },
+  "queues": {
+    "consumers": [
+      {
+        "queue": "mail-to-ai-dev-email-processing",
+        "max_batch_size": 10,
+        "max_retries": 3,
+        "max_batch_timeout": 30
+      }
+    ],
+    "producers": [
+      {
+        "binding": "EMAIL_QUEUE",
+        "queue": "658375bff4da42b89bb129f59e729aef"
+      },
+      {
+        "binding": "EMAIL_DLQ",
+        "queue": "b22ed96dc2a941219026936d4e26328f"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "EchoAgent",
+        "InfoAgent",
+        "ResearchAgent",
+        "SummarizeAgent",
+        "MetaAgent"
+      ],
+      "new_classes": []
+    }
+  ]
 }

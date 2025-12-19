@@ -5,6 +5,7 @@
 import { type AnthropicProvider, createAnthropic } from "@ai-sdk/anthropic";
 import { Agent } from "agents";
 import { generateText, type Tool } from "ai";
+import { marked } from "marked";
 import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
 
 /**
@@ -171,41 +172,9 @@ ${email.body}`.trim();
 	 * Convert plain text response to HTML
 	 */
 	protected formatAsHtml(text: string): string {
-		// Convert markdown-style formatting
-		const html = text
-			// Code blocks
-			.replace(/```(\w*)\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
-			// Inline code
-			.replace(/`([^`]+)`/g, "<code>$1</code>")
-			// Bold
-			.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-			// Italic
-			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
-			// Links
-			.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-			// Headings (h1-h3)
-			.replace(/^### (.+)$/gm, "<h3>$1</h3>")
-			.replace(/^## (.+)$/gm, "<h2>$1</h2>")
-			.replace(/^# (.+)$/gm, "<h1>$1</h1>")
-			// Horizontal rules
-			.replace(/^---$/gm, "<hr>")
-			// Unordered lists
-			.replace(/^- (.+)$/gm, "<li>$1</li>");
-
-		// Convert paragraphs
-		const paragraphs = html.split("\n\n");
-		const htmlParagraphs = paragraphs.map((p) => {
-			// Don't wrap pre blocks in paragraphs
-			if (p.includes("<pre>")) return p;
-			// Don't wrap headings in paragraphs
-			if (p.match(/^<h[1-3]>/)) return p;
-			// Don't wrap hr in paragraphs
-			if (p.trim() === "<hr>") return p;
-			// Wrap consecutive list items in ul
-			if (p.includes("<li>")) {
-				return `<ul>${p.replace(/<br>/g, "")}</ul>`;
-			}
-			return `<p>${p.replace(/\n/g, "<br>")}</p>`;
+		const html = marked(text, {
+			breaks: true,
+			gfm: true, // GitHub Flavored Markdown (includes checklists)
 		});
 
 		return `<!DOCTYPE html>
@@ -240,10 +209,11 @@ ${email.body}`.trim();
     }
     pre code { background: none; padding: 0; }
     a { color: #0066cc; }
+    input[type="checkbox"] { margin-right: 0.5em; }
   </style>
 </head>
 <body>
-  ${htmlParagraphs.join("\n  ")}
+  ${html}
 
   <hr style="margin: 2em 0; border: none; border-top: 1px solid #ddd;">
   <p style="color: #666; font-size: 0.9em;">
