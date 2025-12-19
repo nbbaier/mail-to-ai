@@ -5,7 +5,6 @@
  * e.g., "write-haiku-about-cats@domain.com" creates an agent that writes haikus about cats
  */
 
-import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import type { ParsedEmail } from "../types";
 import { BaseAgent } from "./base-agent";
@@ -44,7 +43,7 @@ export class MetaAgent extends BaseAgent {
 		instruction: string,
 	): Promise<string> {
 		const { text } = await generateText({
-			model: anthropic("claude-sonnet-4-20250514"),
+			model: this.anthropic("claude-haiku-4-5"),
 			maxOutputTokens: 1024,
 			system: `You are a prompt engineer. Your task is to create a system prompt for an AI assistant based on a short instruction.
 
@@ -110,7 +109,8 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 
 		// Check if we need to generate a new system prompt
 		// (first time or if instruction changed)
-		const promptCached = this.cachedInstruction === instruction && this.cachedSystemPrompt !== "";
+		const promptCached =
+			this.cachedInstruction === instruction && this.cachedSystemPrompt !== "";
 
 		if (!promptCached) {
 			console.log(
@@ -123,7 +123,9 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 			this.cachedInstruction = instruction;
 			this.cachedSystemPrompt = generatedPrompt;
 
-			console.log(`MetaAgent: Generated prompt (${generatedPrompt.length} chars)`);
+			console.log(
+				`MetaAgent: Generated prompt (${generatedPrompt.length} chars)`,
+			);
 		}
 
 		// Build the user message
@@ -141,7 +143,7 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 
 		// Generate response using the dynamic system prompt
 		const { text: responseText } = await generateText({
-			model: anthropic("claude-sonnet-4-20250514"),
+			model: this.anthropic("claude-sonnet-4-20250514"),
 			maxOutputTokens: 4096,
 			system: this.cachedSystemPrompt,
 			messages: this.state.conversationHistory.map((msg) => ({

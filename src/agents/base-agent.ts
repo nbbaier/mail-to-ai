@@ -2,9 +2,9 @@
  * Base agent class for all email agents using Cloudflare Agents SDK
  */
 
-import { anthropic } from "@ai-sdk/anthropic";
-import { generateText, type Tool } from "ai";
+import { type AnthropicProvider, createAnthropic } from "@ai-sdk/anthropic";
 import { Agent } from "agents";
+import { generateText, type Tool } from "ai";
 import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
 
 /**
@@ -25,6 +25,12 @@ export abstract class BaseAgent extends Agent<Env, EmailAgentState> {
 	initialState: EmailAgentState = {
 		conversationHistory: [],
 	};
+
+	protected get anthropic(): AnthropicProvider {
+		return createAnthropic({
+			apiKey: this.env.ANTHROPIC_API_KEY,
+		});
+	}
 
 	/**
 	 * Each agent must implement its system prompt
@@ -110,14 +116,11 @@ ${email.body}`.trim();
 		});
 
 		const { text: responseText } = await generateText({
-			model: anthropic("claude-sonnet-4-20250514"),
+			model: this.anthropic("claude-haiku-4-5"),
 			maxOutputTokens: 4096,
 			system: this.getSystemPrompt(),
-			messages: this.state.conversationHistory.map((msg) => ({
-				role: msg.role,
-				content: msg.content,
-			})),
-			...(Object.keys(tools).length > 0 && { tools }),
+			messages: this.state.conversationHistory,
+			tools,
 		});
 
 		const finalText = responseText || "Sorry, I could not generate a response.";

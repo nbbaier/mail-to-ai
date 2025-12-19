@@ -1,21 +1,19 @@
-import { InfoAgent } from "./src/agents/info-agent";
-/**
- * Alchemy Configuration for mail-to-ai
- *
- * Run with: npx alchemy run alchemy.run.ts
- * Deploy with: npx alchemy run alchemy.run.ts --stage production
- *
- * Learn more: https://alchemy.run
- */
-
 import alchemy from "alchemy";
 import {
 	DurableObjectNamespace,
 	KVNamespace,
 	Queue,
 	Worker,
+	WranglerJson,
 } from "alchemy/cloudflare";
 import { CloudflareStateStore } from "alchemy/state";
+import type {
+	EchoAgent,
+	InfoAgent,
+	MetaAgent,
+	ResearchAgent,
+	SummarizeAgent,
+} from "./src/agents";
 
 const app = await alchemy("mail-to-ai", {
 	stage: process.env.ALCHEMY_STAGE ?? "dev",
@@ -24,38 +22,51 @@ const app = await alchemy("mail-to-ai", {
 });
 
 // KV namespace for caching and rate limiting
-export const cache_kv = await KVNamespace("mta-cache_kv", {
+export const cache = await KVNamespace("mta-cache_kv", {
 	title: `${app.name}-${app.stage}-cache`,
 	adopt: true,
 });
 
 // Dead letter queue for failed messages
-export const email_dlq = await Queue("mta-email_dlq", {
+export const emailDLQ = await Queue("mta-email_dlq", {
 	name: `${app.name}-${app.stage}-email-processing-dlq`,
 	adopt: true,
 });
 
-// Main email processing queue
-export const email_queue = await Queue("mta-email_queue", {
+export const emailQueue = await Queue("mta-email_queue", {
 	name: `${app.name}-${app.stage}-email-processing`,
 	adopt: true,
 });
 
-// Durable Object namespaces for agents
-export const echo_agent = DurableObjectNamespace("mta-echo_agent", {
+export const echoAgent = DurableObjectNamespace<EchoAgent>("mta-echo_agent", {
 	className: `EchoAgent`,
+	sqlite: true,
 });
 
-export const info_agent = DurableObjectNamespace("mta-info_agent", {
+export const infoAgent = DurableObjectNamespace<InfoAgent>("mta-info_agent", {
 	className: `InfoAgent`,
+	sqlite: true,
 });
 
-export const research_agent = DurableObjectNamespace("mta-research_agent", {
-	className: `ResearchAgent`,
-});
+export const researchAgent = DurableObjectNamespace<ResearchAgent>(
+	"mta-research_agent",
+	{
+		className: `ResearchAgent`,
+		sqlite: true,
+	},
+);
 
-export const summarize_agent = DurableObjectNamespace("mta-summarize_agent", {
-	className: `SummarizeAgent`,
+export const summarizeAgent = DurableObjectNamespace<SummarizeAgent>(
+	"mta-summarize_agent",
+	{
+		className: `SummarizeAgent`,
+		sqlite: true,
+	},
+);
+
+export const metaAgent = DurableObjectNamespace<MetaAgent>("mta-meta_agent", {
+	className: `MetaAgent`,
+	sqlite: true,
 });
 
 // Main worker
@@ -66,14 +77,14 @@ export const worker = await Worker("mail-to-ai", {
 	compatibilityFlags: ["nodejs_compat"],
 	url: true,
 	bindings: {
-		CACHE_KV: cache_kv,
-		EMAIL_QUEUE: email_queue,
-		EMAIL_DLQ: email_dlq,
-		ECHO_AGENT: echo_agent,
-		INFO_AGENT: info_agent,
-		RESEARCH_AGENT: research_agent,
-		SUMMARIZE_AGENT: summarize_agent,
-
+		CACHE_KV: cache,
+		EMAIL_QUEUE: emailQueue,
+		EMAIL_DLQ: emailDLQ,
+		ECHO_AGENT: echoAgent,
+		INFO_AGENT: infoAgent,
+		RESEARCH_AGENT: researchAgent,
+		SUMMARIZE_AGENT: summarizeAgent,
+		META_AGENT: metaAgent,
 		ALLOWED_DOMAIN: "mail-to-ai.com",
 
 		INBOUND_API_KEY: alchemy.secret(
@@ -88,16 +99,18 @@ export const worker = await Worker("mail-to-ai", {
 	},
 	eventSources: [
 		{
-			queue: email_queue,
+			queue: emailQueue,
 			settings: {
 				batchSize: 10,
 				maxWaitTimeMs: 30000,
 				maxRetries: 3,
-				deadLetterQueue: email_dlq.name,
+				deadLetterQueue: emailDLQ.name,
 			},
 		},
 	],
 });
+
+await WranglerJson({ worker });
 
 console.log(`Worker deployed to: ${worker.url}`);
 

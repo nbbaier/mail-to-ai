@@ -77,7 +77,7 @@ Today's date is ${new Date().toLocaleDateString()}.`;
 		});
 
 		const { text: responseText, toolCalls } = await generateText({
-			model: anthropic("claude-sonnet-4-5-20250929"),
+			model: this.anthropic("claude-sonnet-4-5-20250929"),
 			maxOutputTokens: 4096,
 			system: this.getSystemPrompt(),
 			messages: this.state.conversationHistory.map((msg) => ({
@@ -99,9 +99,8 @@ Today's date is ${new Date().toLocaleDateString()}.`;
 		});
 
 		// Structured logging
-		const searchCount = toolCalls?.filter(
-			(call) => call.toolName === "web_search",
-		).length ?? 0;
+		const searchCount =
+			toolCalls?.filter((call) => call.toolName === "web_search").length ?? 0;
 
 		console.log(
 			JSON.stringify({

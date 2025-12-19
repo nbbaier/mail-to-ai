@@ -36,7 +36,6 @@ export async function processEmail(
 	console.log(`Processing email ${email.id} for agent: ${agentName}`);
 
 	try {
-		// 1. Check rate limit
 		const rateLimit = await checkRateLimit(deps.kv, email.from.email);
 		if (!rateLimit.allowed) {
 			console.log(`Rate limit exceeded for ${email.from.email}`);
@@ -48,23 +47,20 @@ export async function processEmail(
 				rateLimit.resetAt,
 				`noreply@${deps.env.ALLOWED_DOMAIN}`,
 			);
-			return { success: true }; // Successfully handled (just rate limited)
+			return { success: true };
 		}
 
-		// 2. Route to appropriate agent (via Durable Object)
 		const result = await routeToAgent(email, deps.env);
 
 		if (!result.success || !result.reply) {
 			throw new Error(result.error || "Agent failed to generate reply");
 		}
 
-		// 3. Send email reply
 		const sendResult = await sendEmailReply(deps.inbound, result.reply);
 		if (!sendResult.success) {
 			throw new Error(sendResult.error || "Failed to send email");
 		}
 
-		// 4. Track metrics
 		const processingTime = Date.now() - startTime;
 		await Promise.all([
 			incrementEmailCount(deps.kv),
@@ -81,7 +77,6 @@ export async function processEmail(
 			error instanceof Error ? error.message : "Unknown error";
 		console.error(`Failed to process email ${email.id}:`, error);
 
-		// Try to send error email to user
 		try {
 			await sendErrorEmail(
 				deps.inbound,

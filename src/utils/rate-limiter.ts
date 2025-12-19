@@ -13,6 +13,8 @@ interface RateLimitData {
 	windowStart: number;
 }
 
+const UNLIMITED_EMAILS = ["nico.baier@gmail.com"];
+
 /**
  * Check rate limit for a sender email
  * Default: 10 emails per hour
@@ -23,6 +25,14 @@ export async function checkRateLimit(
 	limit: number = 10,
 	windowSeconds: number = 3600,
 ): Promise<RateLimitResult> {
+	if (UNLIMITED_EMAILS.includes(senderEmail.toLowerCase())) {
+		return {
+			allowed: true,
+			remaining: Infinity,
+			resetAt: new Date(Date.now() + windowSeconds * 1000),
+		};
+	}
+
 	const key = `ratelimit:${senderEmail}`;
 	const now = Date.now();
 

@@ -103,14 +103,14 @@ npm run deploy
 
 ## Tech Stack
 
-| Component        | Technology                |
-|------------------|---------------------------|
-| Email            | inbound.new               |
-| Backend          | Cloudflare Workers        |
-| Framework        | Hono                      |
-| Queue            | Cloudflare Queues         |
-| Cache/Rate Limit | Upstash Redis             |
-| AI/LLM           | Claude (Anthropic)        |
+| Component        | Technology         |
+| ---------------- | ------------------ |
+| Email            | inbound.new        |
+| Backend          | Cloudflare Workers |
+| Framework        | Hono               |
+| Queue            | Cloudflare Queues  |
+| Cache/Rate Limit | Upstash Redis      |
+| AI/LLM           | Claude (Anthropic) |
 
 ## License
 
