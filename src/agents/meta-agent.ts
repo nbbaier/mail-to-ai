@@ -7,7 +7,12 @@
 
 import { generateText } from "ai";
 import type { ParsedEmail } from "../types";
-import { getBlockedResponseMessage, validateRequest } from "../utils";
+import {
+	cacheAgentPrompt,
+	getBlockedResponseMessage,
+	getCachedAgentPrompt,
+	validateRequest,
+} from "../utils";
 import { BaseAgent } from "./base-agent";
 
 export class MetaAgent extends BaseAgent {
@@ -124,10 +129,26 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 		// Parse the instruction from the email address
 		const instruction = this.parseAddressToInstruction(email.to);
 
-		// Check if we need to generate a new system prompt
-		// (first time or if instruction changed)
-		const promptCached =
-			this.cachedInstruction === instruction && this.cachedSystemPrompt !== "";
+		// Check cache: first in-memory, then KV
+		let promptCached = false;
+		let kvCached = false;
+
+		if (this.cachedInstruction === instruction && this.cachedSystemPrompt !== "") {
+			// Already have it in memory
+			promptCached = true;
+		} else {
+			// Check KV cache
+			const kvPrompt = await getCachedAgentPrompt(this.env.CACHE_KV, email.to);
+			if (kvPrompt) {
+				this.cachedInstruction = instruction;
+				this.cachedSystemPrompt = kvPrompt;
+				promptCached = true;
+				kvCached = true;
+				console.log(
+					`MetaAgent: Loaded prompt from KV cache for "${instruction}"`,
+				);
+			}
+		}
 
 		if (!promptCached) {
 			console.log(
@@ -140,8 +161,11 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 			this.cachedInstruction = instruction;
 			this.cachedSystemPrompt = generatedPrompt;
 
+			// Cache in KV for future requests (7-day TTL)
+			await cacheAgentPrompt(this.env.CACHE_KV, email.to, generatedPrompt);
+
 			console.log(
-				`MetaAgent: Generated prompt (${generatedPrompt.length} chars)`,
+				`MetaAgent: Generated and cached prompt (${generatedPrompt.length} chars)`,
 			);
 		}
 
@@ -188,6 +212,7 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 				emailId: email.id,
 				from: email.from.email,
 				promptCached,
+				cacheSource: promptCached ? (kvCached ? "kv" : "memory") : "generated",
 				responseTime: Date.now() - startTime,
 				timestamp: new Date().toISOString(),
 			}),
