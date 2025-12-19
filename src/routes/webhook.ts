@@ -46,7 +46,6 @@ webhook.post("/inbound", async (c) => {
 		// Create queue message
 		const queueMessage: QueueMessage = {
 			email,
-			attempt: 1,
 			queuedAt: new Date().toISOString(),
 		};
 

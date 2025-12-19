@@ -21,6 +21,7 @@ export interface ProcessorDependencies {
 	kv: KVNamespace;
 	inbound: Inbound;
 	env: Env;
+	notifyOnError?: boolean;
 }
 
 /**
@@ -77,17 +78,23 @@ export async function processEmail(
 			error instanceof Error ? error.message : "Unknown error";
 		console.error(`Failed to process email ${email.id}:`, error);
 
-		try {
-			await sendErrorEmail(
-				deps.inbound,
-				email.from.email,
-				email.subject,
-				email.messageId,
-				"We encountered a technical issue processing your request. Please try again.",
-				`noreply@${deps.env.ALLOWED_DOMAIN}`,
+		if (deps.notifyOnError !== false) {
+			try {
+				await sendErrorEmail(
+					deps.inbound,
+					email.from.email,
+					email.subject,
+					email.messageId,
+					"We tried multiple times to process your email but kept hitting a technical issue. Please try sending it again in a few minutes.",
+					`noreply@${deps.env.ALLOWED_DOMAIN}`,
+				);
+			} catch (sendError) {
+				console.error("Failed to send error email:", sendError);
+			}
+		} else {
+			console.log(
+				`Skipping user error email for ${email.id} (non-final attempt)`,
 			);
-		} catch (sendError) {
-			console.error("Failed to send error email:", sendError);
 		}
 
 		return { success: false, error: errorMessage };

@@ -62,33 +62,49 @@ export default {
 		_ctx: ExecutionContext,
 	): Promise<void> {
 		const inbound = new Inbound(env.INBOUND_API_KEY);
+		const MAX_PROCESSING_ATTEMPTS = 3;
 
-		const deps = {
-			kv: env.CACHE_KV,
-			inbound,
-			env,
-		};
-
-		// Process each message in the batch
 		for (const message of batch.messages) {
-			const { email, attempt } = message.body;
+			const attempts = message.attempts ?? 1;
+			const { email } = message.body;
+			const isFinalAttempt = attempts >= MAX_PROCESSING_ATTEMPTS;
 
-			console.log(`Processing queued email ${email.id} (attempt ${attempt})`);
+			console.log(
+				`Processing queued email ${email.id} (attempt ${attempts}/${MAX_PROCESSING_ATTEMPTS})`,
+			);
 
 			try {
-				const result = await processEmail(email, deps);
+				const result = await processEmail(email, {
+					kv: env.CACHE_KV,
+					inbound,
+					env,
+					notifyOnError: isFinalAttempt,
+				});
 
 				if (result.success) {
-					// Acknowledge successful processing
+					message.ack();
+				} else if (isFinalAttempt) {
+					console.error(
+						`Email ${email.id} failed after ${attempts} attempts: ${result.error}`,
+					);
 					message.ack();
 				} else {
-					// Retry on failure (up to max_retries in wrangler.toml)
-					console.error(`Email ${email.id} failed: ${result.error}`);
+					console.warn(
+						`Email ${email.id} failed on attempt ${attempts}: ${result.error}; retrying...`,
+					);
 					message.retry();
 				}
 			} catch (error) {
-				console.error(`Unexpected error processing email ${email.id}:`, error);
-				message.retry();
+				console.error(
+					`Unexpected error processing email ${email.id} (attempt ${attempts}):`,
+					error,
+				);
+
+				if (isFinalAttempt) {
+					message.ack();
+				} else {
+					message.retry();
+				}
 			}
 		}
 	},

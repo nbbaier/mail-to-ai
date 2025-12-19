@@ -51,7 +51,6 @@ export interface EmailReply {
  */
 export interface QueueMessage {
 	email: ParsedEmail;
-	attempt: number;
 	queuedAt: string;
 }
 

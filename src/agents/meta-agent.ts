@@ -31,13 +31,21 @@ export class MetaAgent extends BaseAgent {
 	/**
 	 * Parse email address to human-readable instruction
 	 * "write-haiku-about-cats" -> "write haiku about cats"
+	 * "writeHaikuAboutCats" -> "write haiku about cats"
+	 * "write_haiku_about_cats" -> "write haiku about cats"
 	 */
 	private parseAddressToInstruction(address: string): string {
 		// Extract local part (before @)
 		const localPart = address.split("@")[0];
 
+		// Handle camelCase by inserting space before uppercase letters
+		let instruction = localPart.replace(/([a-z])([A-Z])/g, "$1 $2");
+
 		// Replace hyphens and underscores with spaces
-		const instruction = localPart.replace(/[-_]+/g, " ").trim();
+		instruction = instruction.replace(/[-_]+/g, " ").trim();
+
+		// Lowercase the entire instruction
+		instruction = instruction.toLowerCase();
 
 		return instruction;
 	}
@@ -123,7 +131,9 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 					timestamp: new Date().toISOString(),
 				}),
 			);
-			return getBlockedResponseMessage(safetyResult.reason || "Safety check failed");
+			return getBlockedResponseMessage(
+				safetyResult.reason || "Safety check failed",
+			);
 		}
 
 		// Parse the instruction from the email address
@@ -133,7 +143,10 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 		let promptCached = false;
 		let kvCached = false;
 
-		if (this.cachedInstruction === instruction && this.cachedSystemPrompt !== "") {
+		if (
+			this.cachedInstruction === instruction &&
+			this.cachedSystemPrompt !== ""
+		) {
 			// Already have it in memory
 			promptCached = true;
 		} else {
