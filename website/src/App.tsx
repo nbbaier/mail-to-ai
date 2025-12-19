@@ -1,11 +1,13 @@
 import {
+	Book01Icon,
 	File02Icon,
 	InformationCircleIcon,
 	Search02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-import { type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
+import Guide from "./Guide";
 
 const DOMAIN = "mail-to-ai.com";
 
@@ -288,17 +290,22 @@ function BuiltInAgents() {
 					<p className="text-slate-600 mb-4">
 						Want to learn more about how the service works?
 					</p>
-					<a
-						href={`mailto:info@${DOMAIN}`}
-						className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300 transition"
-					>
-						<HugeiconsIcon
-							icon={InformationCircleIcon}
-							size={20}
-							className="mr-1"
-						/>
-						info@{DOMAIN}
-					</a>
+					<div className="flex flex-col sm:flex-row gap-4 justify-center">
+						<a
+							href="/guide"
+							className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700 transition"
+						>
+							<HugeiconsIcon icon={Book01Icon} size={20} />
+							Read the User Guide
+						</a>
+						<a
+							href={`mailto:info@${DOMAIN}`}
+							className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300 transition"
+						>
+							<HugeiconsIcon icon={InformationCircleIcon} size={20} />
+							info@{DOMAIN}
+						</a>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -630,11 +637,18 @@ function Footer() {
 					</div>
 
 					<div>
-						<h4 className="text-white font-semibold mb-4">Tech Stack</h4>
+						<h4 className="text-white font-semibold mb-4">Resources</h4>
 						<ul className="space-y-2 text-sm">
-							<li>Cloudflare Workers</li>
-							<li>Claude AI</li>
-							<li>Inbound.new</li>
+							<li>
+								<a
+									href="/guide"
+									className="hover:text-cyan-400 transition"
+								>
+									User Guide
+								</a>
+							</li>
+							<li className="text-slate-500">Cloudflare Workers</li>
+							<li className="text-slate-500">Claude AI</li>
 						</ul>
 					</div>
 				</div>
@@ -647,7 +661,19 @@ function Footer() {
 	);
 }
 
-export default function App() {
+function useRoute() {
+	const [path, setPath] = useState(window.location.pathname);
+
+	useEffect(() => {
+		const handlePopState = () => setPath(window.location.pathname);
+		window.addEventListener("popstate", handlePopState);
+		return () => window.removeEventListener("popstate", handlePopState);
+	}, []);
+
+	return path;
+}
+
+function LandingPage() {
 	return (
 		<div className="bg-slate-50 text-gray-900 font-sans">
 			<Hero />
@@ -658,4 +684,14 @@ export default function App() {
 			<Footer />
 		</div>
 	);
+}
+
+export default function App() {
+	const path = useRoute();
+
+	if (path === "/guide") {
+		return <Guide />;
+	}
+
+	return <LandingPage />;
 }
