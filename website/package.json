@@ -1,0 +1,31 @@
+{
+	"name": "mail-to-ai-website",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"dev": "alchemy dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"deploy": "alchemy deploy --adopt",
+		"deploy:prod": "ALCHEMY_STAGE=prod alchemy deploy",
+		"destroy": "alchemy destroy",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "^1.7.4",
+		"@cloudflare/workers-types": "^4.20241205.0",
+		"@tailwindcss/vite": "^4.0.6",
+		"@types/react": "^19.1.2",
+		"@types/react-dom": "^19.1.2",
+		"@vitejs/plugin-react": "^4.4.1",
+		"alchemy": "^0.81.4",
+		"tailwindcss": "^4.0.6",
+		"typescript": "^5.7.2",
+		"vite": "^7.1.9"
+	}
+}

@@ -72,6 +72,7 @@ export const metaAgent = DurableObjectNamespace<MetaAgent>("mta-meta_agent", {
 // Main worker
 export const worker = await Worker("mail-to-ai", {
 	name: `${app.name}-${app.stage}`,
+	domains: ["api.mail-to-ai.com"],
 	entrypoint: "src/index.ts",
 	compatibilityDate: "2024-12-01",
 	compatibilityFlags: ["nodejs_compat"],

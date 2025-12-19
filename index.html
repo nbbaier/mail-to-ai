@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Mail-to-AI | Real AI Agents That Work While You Sleep</title>
+   <meta name="description"
+      content="True autonomous AI agents. Send a request via email, get back to your life. No waiting, no interfaces, no hand-holding.">
+   <script src="https://cdn.tailwindcss.com"></script>
+   <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+      body {
+         font-family: 'Inter', sans-serif;
+      }
+
+      h1,
+      h2,
+      h3 {
+         font-family: 'Space Grotesk', sans-serif;
+      }
+
+      .gradient-text {
+         background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+         -webkit-background-clip: text;
+         -webkit-text-fill-color: transparent;
+         background-clip: text;
+      }
+
+      .mesh-gradient {
+         background:
+            radial-gradient(at 27% 37%, hsla(215, 98%, 61%, 0.15) 0px, transparent 50%),
+            radial-gradient(at 97% 21%, hsla(180, 100%, 50%, 0.15) 0px, transparent 50%),
+            radial-gradient(at 52% 99%, hsla(190, 100%, 45%, 0.15) 0px, transparent 50%),
+            radial-gradient(at 10% 29%, hsla(200, 100%, 50%, 0.15) 0px, transparent 50%),
+            radial-gradient(at 97% 96%, hsla(185, 100%, 48%, 0.15) 0px, transparent 50%);
+      }
+
+      @keyframes float {
+
+         0%,
+         100% {
+            transform: translateY(0px);
+         }
+
+         50% {
+            transform: translateY(-20px);
+         }
+      }
+
+      .float {
+         animation: float 6s ease-in-out infinite;
+      }
+
+      .card-hover {
+         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .card-hover:hover {
+         transform: translateY(-4px);
+      }
+
+      @keyframes dash {
+         to {
+            stroke-dashoffset: 0;
+         }
+      }
+
+      .animate-dash {
+         stroke-dasharray: 1000;
+         stroke-dashoffset: 1000;
+         animation: dash 2s ease-in-out forwards;
+      }
+   </style>
+</head>
+
+<body class="bg-slate-50 text-gray-900">
+
+   <!-- Hero Section -->
+   <header class="relative overflow-hidden bg-slate-900 text-white">
+      <!-- Mesh gradient background -->
+      <div class="absolute inset-0 mesh-gradient"></div>
+
+      <!-- Grid pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03]"
+         style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
+      </div>
+
+      <div class="relative max-w-6xl mx-auto px-6 py-24 md:py-32">
+         <div class="max-w-4xl">
+            <div
+               class="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-cyan-500/10 backdrop-blur-sm rounded-full text-sm font-medium border border-cyan-400/20">
+               <span class="relative flex h-2 w-2">
+                  <span
+                     class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+               </span>
+               Agents working right now
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+               Send a request.<br />
+               <span class="gradient-text">Get back to your life.</span>
+            </h1>
+
+            <p class="text-xl md:text-2xl text-slate-300 mb-12 leading-relaxed max-w-3xl">
+               Real autonomous agents that work while you're offline. Fire-and-forget workflows via email. No apps, no
+               waiting, no babysitting.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 items-start">
+               <a href="#built-in"
+                  class="px-8 py-4 bg-cyan-500 text-white font-semibold rounded-lg shadow-lg hover:bg-cyan-600 transition transform hover:scale-105">
+                  See Built-in Agents
+               </a>
+               <a href="#custom"
+                  class="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 font-semibold rounded-lg hover:bg-white/20 transition">
+                  Or Create Your Own
+               </a>
+            </div>
+         </div>
+
+         <!-- Async workflow visualization -->
+         <div class="mt-20 max-w-2xl">
+            <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8">
+               <div class="space-y-6">
+                  <div class="flex items-start gap-4">
+                     <div class="flex-shrink-0 w-16 text-sm text-slate-400 font-mono">9:47 AM</div>
+                     <div class="flex-1">
+                        <div class="bg-cyan-600 rounded-2xl rounded-tl-sm p-4 text-white text-sm max-w-md">
+                           Research the top 10 AI email automation companies, their funding rounds, and key product
+                           differences
+                        </div>
+                     </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 py-4">
+                     <div class="flex-1 h-px bg-slate-700"></div>
+                     <div class="flex items-center gap-2 text-cyan-400 text-sm font-mono">
+                        <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                           </circle>
+                           <path class="opacity-75" fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                           </path>
+                        </svg>
+                        <span>agent processing</span>
+                     </div>
+                     <div class="flex-1 h-px bg-slate-700"></div>
+                  </div>
+
+                  <div class="flex items-start gap-4">
+                     <div class="flex-shrink-0 w-16 text-sm text-slate-400 font-mono">2:34 PM</div>
+                     <div class="flex-1 text-right">
+                        <div
+                           class="bg-slate-700 border border-slate-600 rounded-2xl rounded-tr-sm p-4 text-slate-200 text-sm inline-block max-w-md">
+                           Complete research report with 10 companies analyzed, funding data verified, comparison table
+                           attached →
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            <p class="text-center text-slate-400 text-sm mt-6">
+               <span class="text-cyan-400">~5 hours of autonomous work</span> while you had meetings, lunch, focused
+               time
+            </p>
+         </div>
+      </div>
+   </header>
+
+   <!-- The Problem/Solution -->
+   <section class="py-20 bg-white border-b border-slate-200">
+      <div class="max-w-6xl mx-auto px-6">
+         <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+               <div class="inline-block px-3 py-1 bg-red-100 text-red-700 text-sm font-semibold rounded-full mb-4">
+                  The Problem
+               </div>
+               <h2 class="text-3xl font-bold mb-6">Most "AI assistants" require you to sit there and watch</h2>
+               <ul class="space-y-4">
+                  <li class="flex items-start gap-3">
+                     <svg class="w-6 h-6 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                     </svg>
+                     <span class="text-slate-600">You type a prompt, wait for streaming response</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                     <svg class="w-6 h-6 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                     </svg>
+                     <span class="text-slate-600">Stuck in their interface while it "thinks"</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                     <svg class="w-6 h-6 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                     </svg>
+                     <span class="text-slate-600">Can't delegate and move on with your day</span>
+                  </li>
+               </ul>
+            </div>
+
+            <div>
+               <div
+                  class="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-semibold rounded-full mb-4">
+                  The Solution
+               </div>
+               <h2 class="text-3xl font-bold mb-6">True agents work asynchronously, like human colleagues</h2>
+               <ul class="space-y-4">
+                  <li class="flex items-start gap-3">
+                     <svg class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                     </svg>
+                     <span class="text-slate-600"><strong>Email your request</strong> in natural language</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                     <svg class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                     </svg>
+                     <span class="text-slate-600"><strong>Agent works autonomously</strong> in the background</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                     <svg class="w-6 h-6 text-emerald-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                     </svg>
+                     <span class="text-slate-600"><strong>Check back later</strong> for completed work in inbox</span>
+                  </li>
+               </ul>
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <!-- Built-in Agents Section -->
+   <section id="built-in" class="py-24 bg-slate-50">
+      <div class="max-w-6xl mx-auto px-6">
+         <div class="text-center mb-16">
+            <div class="inline-block px-4 py-2 bg-cyan-100 text-cyan-700 text-sm font-semibold rounded-full mb-4">
+               Ready to Use
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">Two Built-in Agents</h2>
+            <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+               Specialized agents optimized for the most common async workflows
+            </p>
+         </div>
+
+         <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <!-- Research Agent -->
+            <div class="card-hover bg-white rounded-3xl p-8 border-2 border-slate-200 shadow-lg">
+               <div class="flex items-start justify-between mb-6">
+                  <div>
+                     <div
+                        class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mb-3">
+                        DEEP WORK
+                     </div>
+                     <h3 class="text-3xl font-bold text-slate-900 mb-2">Research Agent</h3>
+                     <code
+                        class="text-sm bg-slate-100 px-3 py-1.5 rounded-lg text-blue-600 font-mono">research@domain.com</code>
+                  </div>
+                  <div
+                     class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                     </svg>
+                  </div>
+               </div>
+
+               <p class="text-slate-600 mb-6 leading-relaxed">
+                  Multi-source web research with synthesis, citations, and structured reports. Perfect for competitive
+                  analysis, market research, technical deep-dives.
+               </p>
+
+               <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-6">
+                  <div class="text-xs text-slate-500 font-semibold mb-2 uppercase tracking-wide">Example Request</div>
+                  <p class="text-sm text-slate-700 leading-relaxed">
+                     "Compare the pricing models and target markets of the top 5 project management tools used by remote
+                     teams in 2024"
+                  </p>
+               </div>
+
+               <div class="flex items-center justify-between text-sm">
+                  <div class="flex items-center gap-2 text-slate-500">
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                     </svg>
+                     <span>30-120 min typical</span>
+                  </div>
+                  <a href="mailto:research@domain.com"
+                     class="text-cyan-600 font-semibold hover:text-cyan-700 flex items-center gap-1">
+                     Try it now
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                           d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                     </svg>
+                  </a>
+               </div>
+            </div>
+
+            <!-- Summarize Agent -->
+            <div class="card-hover bg-white rounded-3xl p-8 border-2 border-slate-200 shadow-lg">
+               <div class="flex items-start justify-between mb-6">
+                  <div>
+                     <div
+                        class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full mb-3">
+                        FAST TRACK
+                     </div>
+                     <h3 class="text-3xl font-bold text-slate-900 mb-2">Summarize Agent</h3>
+                     <code
+                        class="text-sm bg-slate-100 px-3 py-1.5 rounded-lg text-emerald-600 font-mono">summarize@domain.com</code>
+                  </div>
+                  <div
+                     class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                     </svg>
+                  </div>
+               </div>
+
+               <p class="text-slate-600 mb-6 leading-relaxed">
+                  Intelligent summarization of long email threads, articles, documents. Extracts key points, action
+                  items, decisions made.
+               </p>
+
+               <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 mb-6">
+                  <div class="text-xs text-slate-500 font-semibold mb-2 uppercase tracking-wide">Example Request</div>
+                  <p class="text-sm text-slate-700 leading-relaxed">
+                     Forward a 52-email thread: "Summarize this discussion and tell me what we decided about the launch
+                     timeline"
+                  </p>
+               </div>
+
+               <div class="flex items-center justify-between text-sm">
+                  <div class="flex items-center gap-2 text-slate-500">
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                     </svg>
+                     <span>5-20 min typical</span>
+                  </div>
+                  <a href="mailto:summarize@domain.com"
+                     class="text-cyan-600 font-semibold hover:text-cyan-700 flex items-center gap-1">
+                     Try it now
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                           d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                     </svg>
+                  </a>
+               </div>
+            </div>
+         </div>
+
+         <!-- Info CTA -->
+         <div class="mt-12 text-center">
+            <p class="text-slate-600 mb-4">
+               Want to learn more about how the service works?
+            </p>
+            <a href="mailto:info@domain.com"
+               class="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300 transition">
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+               </svg>
+               Email info@domain.com
+            </a>
+         </div>
+      </div>
+   </section>
+
+   <!-- Custom Agents Section -->
+   <section id="custom" class="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
+      <!-- Decorative elements -->
+      <div class="absolute top-0 right-0 w-1/3 h-full opacity-10">
+         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+            <path fill="currentColor"
+               d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.6,90,-16.3,88.5,-0.9C87,14.6,81.4,29.2,73.1,42.8C64.8,56.4,53.8,69,40.1,76.8C26.4,84.6,10,87.6,-5.8,87.1C-21.6,86.6,-36.8,82.6,-49.5,74.5C-62.2,66.4,-72.4,54.2,-78.9,40.2C-85.4,26.2,-88.2,10.4,-86.8,-4.9C-85.4,-20.2,-79.8,-35,-71.1,-47.8C-62.4,-60.6,-50.6,-71.4,-37.3,-79C-24,-86.6,-9.3,-91,4.7,-89.3C18.7,-87.6,30.6,-83.6,44.7,-76.4Z"
+               transform="translate(100 100)" />
+         </svg>
+      </div>
+
+      <div class="relative max-w-6xl mx-auto px-6">
+         <div class="text-center mb-16">
+            <div
+               class="inline-block px-4 py-2 bg-cyan-500/20 text-cyan-300 text-sm font-semibold rounded-full mb-4 border border-cyan-400/30">
+               Infinitely Flexible
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">Or Create Any Agent Instantly</h2>
+            <p class="text-xl text-slate-300 max-w-3xl mx-auto">
+               The meta-agent creates custom agents from the email address itself. No setup, no configuration. Just
+               describe what you want.
+            </p>
+         </div>
+
+         <div class="max-w-4xl mx-auto">
+            <!-- How it works -->
+            <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 mb-12">
+               <h3 class="text-2xl font-bold mb-6 text-center">How Custom Agents Work</h3>
+
+               <div class="grid md:grid-cols-3 gap-6 text-center">
+                  <div>
+                     <div
+                        class="w-12 h-12 bg-cyan-500/20 border border-cyan-400/30 rounded-xl flex items-center justify-center text-2xl font-bold mx-auto mb-3 text-cyan-400">
+                        1
+                     </div>
+                     <p class="text-sm text-slate-300">Describe the task in the email address using hyphens or
+                        underscores</p>
+                  </div>
+                  <div>
+                     <div
+                        class="w-12 h-12 bg-cyan-500/20 border border-cyan-400/30 rounded-xl flex items-center justify-center text-2xl font-bold mx-auto mb-3 text-cyan-400">
+                        2
+                     </div>
+                     <p class="text-sm text-slate-300">Meta-agent creates a specialized agent on the fly</p>
+                  </div>
+                  <div>
+                     <div
+                        class="w-12 h-12 bg-cyan-500/20 border border-cyan-400/30 rounded-xl flex items-center justify-center text-2xl font-bold mx-auto mb-3 text-cyan-400">
+                        3
+                     </div>
+                     <p class="text-sm text-slate-300">Your custom agent processes the request and replies</p>
+                  </div>
+               </div>
+            </div>
+
+            <!-- Examples -->
+            <div class="space-y-4">
+               <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700">
+                  <div class="flex flex-col md:flex-row md:items-center gap-4">
+                     <code
+                        class="text-cyan-400 font-mono text-sm md:text-base flex-shrink-0">write-haiku-about-cats@domain.com</code>
+                     <div class="hidden md:block text-slate-600">→</div>
+                     <p class="text-slate-300 text-sm">Creates a poetry agent that writes haikus about cats</p>
+                  </div>
+               </div>
+
+               <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700">
+                  <div class="flex flex-col md:flex-row md:items-center gap-4">
+                     <code
+                        class="text-cyan-400 font-mono text-sm md:text-base flex-shrink-0">translate-to-spanish@domain.com</code>
+                     <div class="hidden md:block text-slate-600">→</div>
+                     <p class="text-slate-300 text-sm">Creates a translation agent for Spanish</p>
+                  </div>
+               </div>
+
+               <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700">
+                  <div class="flex flex-col md:flex-row md:items-center gap-4">
+                     <code
+                        class="text-cyan-400 font-mono text-sm md:text-base flex-shrink-0">explain-like-im-five@domain.com</code>
+                     <div class="hidden md:block text-slate-600">→</div>
+                     <p class="text-slate-300 text-sm">Creates an agent that simplifies complex topics</p>
+                  </div>
+               </div>
+
+               <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700">
+                  <div class="flex flex-col md:flex-row md:items-center gap-4">
+                     <code
+                        class="text-cyan-400 font-mono text-sm md:text-base flex-shrink-0">code-review-python@domain.com</code>
+                     <div class="hidden md:block text-slate-600">→</div>
+                     <p class="text-slate-300 text-sm">Creates a code review agent for Python</p>
+                  </div>
+               </div>
+
+               <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700">
+                  <div class="flex flex-col md:flex-row md:items-center gap-4">
+                     <code
+                        class="text-cyan-400 font-mono text-sm md:text-base flex-shrink-0">compare-stripe-vs-paypal@domain.com</code>
+                     <div class="hidden md:block text-slate-600">→</div>
+                     <p class="text-slate-300 text-sm">Creates an agent that compares payment processors</p>
+                  </div>
+               </div>
+            </div>
+
+            <div class="mt-10 text-center">
+               <p class="text-slate-400 text-sm mb-6">
+                  The possibilities are endless. Any task you can describe, you can create an agent for.
+               </p>
+               <a href="mailto:your-custom-agent@domain.com"
+                  class="inline-block px-8 py-4 bg-cyan-500 text-white font-semibold rounded-lg shadow-lg hover:bg-cyan-600 transition transform hover:scale-105">
+                  Create Your First Custom Agent
+               </a>
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <!-- Use Cases -->
+   <section class="py-20 bg-white">
+      <div class="max-w-6xl mx-auto px-6">
+         <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-4">Built for people who value their time</h2>
+            <p class="text-xl text-slate-600">Delegate work that takes hours, not minutes</p>
+         </div>
+
+         <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+               <div class="text-5xl mb-4">👨‍💼</div>
+               <h3 class="font-bold text-xl mb-3">Founders & Executives</h3>
+               <p class="text-slate-600 text-sm leading-relaxed">
+                  Queue up competitive analysis, market research, and strategic reports in the morning. Review completed
+                  work in the afternoon.
+               </p>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+               <div class="text-5xl mb-4">🔬</div>
+               <h3 class="font-bold text-xl mb-3">Researchers & Analysts</h3>
+               <p class="text-slate-600 text-sm leading-relaxed">
+                  Send multiple research requests overnight. Wake up to comprehensive reports with citations ready for
+                  review.
+               </p>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+               <div class="text-5xl mb-4">✍️</div>
+               <h3 class="font-bold text-xl mb-3">Writers & Creators</h3>
+               <p class="text-slate-600 text-sm leading-relaxed">
+                  Delegate background research and fact-checking while you focus on creating. Get sourced information
+                  delivered to your inbox.
+               </p>
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <!-- Final CTA -->
+   <section class="py-20 bg-gradient-to-br from-cyan-600 to-blue-600 text-white">
+      <div class="max-w-4xl mx-auto px-6 text-center">
+         <h2 class="text-4xl md:text-5xl font-bold mb-6">Stop waiting. Start delegating.</h2>
+         <p class="text-xl text-cyan-100 mb-10">
+            No signup. No credit card. Just email an agent and get back to work.
+         </p>
+
+         <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="mailto:research@domain.com"
+               class="px-8 py-4 bg-white text-cyan-600 font-semibold rounded-lg shadow-lg hover:bg-cyan-50 transition transform hover:scale-105">
+               Try Research Agent
+            </a>
+            <a href="mailto:summarize@domain.com"
+               class="px-8 py-4 bg-cyan-500/20 backdrop-blur-sm border-2 border-white/30 font-semibold rounded-lg hover:bg-cyan-500/30 transition">
+               Try Summarize Agent
+            </a>
+         </div>
+      </div>
+   </section>
+
+   <!-- Footer -->
+   <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+      <div class="max-w-6xl mx-auto px-6">
+         <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+               <h3 class="text-white font-bold text-lg mb-4">Mail-to-AI</h3>
+               <p class="text-sm leading-relaxed">
+                  True autonomous AI agents accessible through email.
+               </p>
+            </div>
+
+            <div>
+               <h4 class="text-white font-semibold mb-4">Built-in Agents</h4>
+               <ul class="space-y-2 text-sm">
+                  <li><a href="mailto:research@domain.com"
+                        class="hover:text-cyan-400 transition">research@domain.com</a></li>
+                  <li><a href="mailto:summarize@domain.com"
+                        class="hover:text-cyan-400 transition">summarize@domain.com</a></li>
+                  <li><a href="mailto:info@domain.com" class="hover:text-cyan-400 transition">info@domain.com</a></li>
+               </ul>
+            </div>
+
+            <div>
+               <h4 class="text-white font-semibold mb-4">Custom Agents</h4>
+               <ul class="space-y-2 text-sm">
+                  <li class="text-slate-500">Create any task description</li>
+                  <li class="text-slate-500">Infinite possibilities</li>
+                  <li class="text-slate-500">No setup required</li>
+               </ul>
+            </div>
+
+            <div>
+               <h4 class="text-white font-semibold mb-4">Tech Stack</h4>
+               <ul class="space-y-2 text-sm">
+                  <li>Cloudflare Workers</li>
+                  <li>Claude AI</li>
+                  <li>Inbound.new</li>
+               </ul>
+            </div>
+         </div>
+
+         <div class="border-t border-slate-800 pt-8 text-center text-sm">
+            <p>Built for the inbound.new hackathon</p>
+         </div>
+      </div>
+   </footer>
+
+</body>
+
+</html>

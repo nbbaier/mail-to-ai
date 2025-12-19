@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mesh-gradient {
+  background: radial-gradient(at 27% 37%, hsla(215, 98%, 61%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 97% 21%, hsla(180, 100%, 50%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 52% 99%, hsla(190, 100%, 45%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 10% 29%, hsla(200, 100%, 50%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 97% 96%, hsla(185, 100%, 48%, 0.15) 0px, transparent 50%);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+}

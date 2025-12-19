@@ -8,6 +8,7 @@ import { Inbound } from "@inboundemail/sdk";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { landing } from "./routes/landing";
 import { webhook } from "./routes/webhook";
 import { processEmail } from "./services/email-processor";
 import type { Env, QueueMessage } from "./types";
@@ -27,15 +28,6 @@ app.use("*", logger());
 app.use("*", cors());
 
 // Health check endpoint
-app.get("/", (c) => {
-	return c.json({
-		service: "mail-to-ai",
-		status: "healthy",
-		version: "0.1.0",
-		timestamp: new Date().toISOString(),
-	});
-});
-
 app.get("/health", (c) => {
 	return c.json({
 		status: "ok",
@@ -43,7 +35,8 @@ app.get("/health", (c) => {
 	});
 });
 
-// Mount webhook routes
+// Mount routes
+app.route("/", landing);
 app.route("/webhook", webhook);
 
 // Export the Hono app for Cloudflare Workers
