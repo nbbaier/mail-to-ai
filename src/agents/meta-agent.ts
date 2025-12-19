@@ -7,6 +7,7 @@
 
 import { generateText } from "ai";
 import type { ParsedEmail } from "../types";
+import { getBlockedResponseMessage, validateRequest } from "../utils";
 import { BaseAgent } from "./base-agent";
 
 export class MetaAgent extends BaseAgent {
@@ -103,6 +104,22 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 
 		// Set the current address for this request
 		this.currentAddress = email.to;
+
+		// Safety validation - check address and body for blocked content
+		const safetyResult = validateRequest(email.to, email.body);
+		if (!safetyResult.safe) {
+			console.log(
+				JSON.stringify({
+					agent: "MetaAgent",
+					blocked: true,
+					reason: safetyResult.reason,
+					emailId: email.id,
+					from: email.from.email,
+					timestamp: new Date().toISOString(),
+				}),
+			);
+			return getBlockedResponseMessage(safetyResult.reason || "Safety check failed");
+		}
 
 		// Parse the instruction from the email address
 		const instruction = this.parseAddressToInstruction(email.to);

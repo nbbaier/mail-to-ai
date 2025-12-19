@@ -12,3 +12,11 @@ export {
 	type RateLimitResult,
 	trackAgentUsage,
 } from "./rate-limiter";
+
+export {
+	getBlockedResponseMessage,
+	type SafetyValidationResult,
+	validateAddress,
+	validateBody,
+	validateRequest,
+} from "./safety-validator";
