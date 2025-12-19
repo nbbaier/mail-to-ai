@@ -1,4 +1,33 @@
+import { useEffect, useRef, type RefObject } from "react";
+
 const DOMAIN = "mail-to-ai.com";
+
+function useScrollReveal<T extends HTMLElement>(): RefObject<T | null> {
+	const ref = useRef<T>(null);
+
+	useEffect(() => {
+		const element = ref.current;
+		if (!element) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add("visible");
+					}
+				});
+			},
+			{ threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+		);
+
+		const fadeElements = element.querySelectorAll(".fade-in-up");
+		fadeElements.forEach((el) => observer.observe(el));
+
+		return () => observer.disconnect();
+	}, []);
+
+	return ref;
+}
 
 function Hero() {
 	return (
@@ -13,7 +42,7 @@ function Hero() {
 
 			<div className="relative max-w-6xl mx-auto px-6 py-24 md:py-32">
 				<div className="max-w-4xl">
-					<div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-cyan-500/10 backdrop-blur-sm rounded-full text-sm font-medium border border-cyan-400/20">
+					<div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-cyan-500/10 backdrop-blur-sm rounded-full text-sm font-medium border border-cyan-400/20 hero-animate hero-delay-1">
 						<span className="relative flex h-2 w-2">
 							<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
 							<span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
@@ -21,19 +50,19 @@ function Hero() {
 						Agents working right now
 					</div>
 
-					<h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight font-display">
+					<h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight font-display hero-animate hero-delay-2">
 						Send a request.
 						<br />
 						<span className="gradient-text">Get back to your life.</span>
 					</h1>
 
-					<p className="text-xl md:text-2xl text-slate-300 mb-12 leading-relaxed max-w-3xl">
+					<p className="text-xl md:text-2xl text-slate-300 mb-12 leading-relaxed max-w-3xl hero-animate hero-delay-3">
 						Real autonomous agents that work while you're offline.
 						Fire-and-forget workflows via email. No apps, no waiting, no
 						babysitting.
 					</p>
 
-					<div className="flex flex-col sm:flex-row gap-4 items-start">
+					<div className="flex flex-col sm:flex-row gap-4 items-start hero-animate hero-delay-4">
 						<a
 							href="#built-in"
 							className="px-8 py-4 bg-cyan-500 text-white font-semibold rounded-lg shadow-lg hover:bg-cyan-600 transition transform hover:scale-105"
@@ -49,7 +78,7 @@ function Hero() {
 					</div>
 				</div>
 
-				<div className="mt-20 max-w-2xl">
+				<div className="mt-20 max-w-2xl hero-animate hero-delay-5">
 					<div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8">
 						<div className="space-y-6">
 							<div className="flex items-start gap-4">
@@ -66,7 +95,7 @@ function Hero() {
 
 							<div className="flex items-center gap-3 py-4">
 								<div className="flex-1 h-px bg-slate-700" />
-								<div className="flex items-center gap-2 text-cyan-400 text-sm font-mono">
+								<div className="flex items-center gap-2 text-cyan-400 text-sm font-mono px-3 py-1 rounded-full pulse-glow">
 									<svg
 										className="w-4 h-4 animate-spin"
 										fill="none"
@@ -116,11 +145,13 @@ function Hero() {
 }
 
 function ProblemSolution() {
+	const ref = useScrollReveal<HTMLElement>();
+
 	return (
-		<section className="py-20 bg-white border-b border-slate-200">
+		<section ref={ref} className="py-20 bg-white border-b border-slate-200">
 			<div className="max-w-6xl mx-auto px-6">
 				<div className="grid md:grid-cols-2 gap-16 items-center">
-					<div>
+					<div className="fade-in-up">
 						<div className="inline-block px-3 py-1 bg-red-100 text-red-700 text-sm font-semibold rounded-full mb-4">
 							The Problem
 						</div>
@@ -153,7 +184,7 @@ function ProblemSolution() {
 						</ul>
 					</div>
 
-					<div>
+					<div className="fade-in-up stagger-2">
 						<div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-semibold rounded-full mb-4">
 							The Solution
 						</div>
@@ -200,10 +231,12 @@ function ProblemSolution() {
 }
 
 function BuiltInAgents() {
+	const ref = useScrollReveal<HTMLElement>();
+
 	return (
-		<section id="built-in" className="py-24 bg-slate-50">
+		<section ref={ref} id="built-in" className="py-24 bg-slate-50">
 			<div className="max-w-6xl mx-auto px-6">
-				<div className="text-center mb-16">
+				<div className="text-center mb-16 fade-in-up">
 					<div className="inline-block px-4 py-2 bg-cyan-100 text-cyan-700 text-sm font-semibold rounded-full mb-4">
 						Ready to Use
 					</div>
@@ -216,6 +249,7 @@ function BuiltInAgents() {
 				</div>
 
 				<div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+					<div className="fade-in-up stagger-1">
 					<AgentCard
 						badge="DEEP WORK"
 						badgeColor="blue"
@@ -234,7 +268,9 @@ function BuiltInAgents() {
 						example='"Compare the pricing models and target markets of the top 5 project management tools used by remote teams in 2024"'
 						time="30-120 min typical"
 					/>
+					</div>
 
+					<div className="fade-in-up stagger-2">
 					<AgentCard
 						badge="FAST TRACK"
 						badgeColor="emerald"
@@ -253,9 +289,10 @@ function BuiltInAgents() {
 						example='Forward a 52-email thread: "Summarize this discussion and tell me what we decided about the launch timeline"'
 						time="5-20 min typical"
 					/>
+					</div>
 				</div>
 
-				<div className="mt-12 text-center">
+				<div className="mt-12 text-center fade-in-up stagger-3">
 					<p className="text-slate-600 mb-4">
 						Want to learn more about how the service works?
 					</p>
@@ -397,6 +434,8 @@ function AgentCard({
 }
 
 function CustomAgents() {
+	const ref = useScrollReveal<HTMLElement>();
+
 	const examples = [
 		{
 			email: `write-haiku-about-cats@${DOMAIN}`,
@@ -422,6 +461,7 @@ function CustomAgents() {
 
 	return (
 		<section
+			ref={ref}
 			id="custom"
 			className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden"
 		>
@@ -440,7 +480,7 @@ function CustomAgents() {
 			</div>
 
 			<div className="relative max-w-6xl mx-auto px-6">
-				<div className="text-center mb-16">
+				<div className="text-center mb-16 fade-in-up">
 					<div className="inline-block px-4 py-2 bg-cyan-500/20 text-cyan-300 text-sm font-semibold rounded-full mb-4 border border-cyan-400/30">
 						Infinitely Flexible
 					</div>
@@ -454,7 +494,7 @@ function CustomAgents() {
 				</div>
 
 				<div className="max-w-4xl mx-auto">
-					<div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 mb-12">
+					<div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-8 border border-slate-700 mb-12 fade-in-up stagger-1">
 						<h3 className="text-2xl font-bold mb-6 text-center font-display">
 							How Custom Agents Work
 						</h3>
@@ -476,10 +516,10 @@ function CustomAgents() {
 					</div>
 
 					<div className="space-y-4">
-						{examples.map(({ email, desc }) => (
+						{examples.map(({ email, desc }, i) => (
 							<div
 								key={email}
-								className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700"
+								className={`bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 fade-in-up stagger-${Math.min(i + 2, 5)}`}
 							>
 								<div className="flex flex-col md:flex-row md:items-center gap-4">
 									<code className="text-cyan-400 font-mono text-sm md:text-base shrink-0">
@@ -511,6 +551,8 @@ function CustomAgents() {
 }
 
 function UseCases() {
+	const ref = useScrollReveal<HTMLElement>();
+
 	const cases = [
 		{
 			emoji: "👨‍💼",
@@ -530,9 +572,9 @@ function UseCases() {
 	];
 
 	return (
-		<section className="py-20 bg-white">
+		<section ref={ref} className="py-20 bg-white">
 			<div className="max-w-6xl mx-auto px-6">
-				<div className="text-center mb-16">
+				<div className="text-center mb-16 fade-in-up">
 					<h2 className="text-4xl font-bold mb-4 font-display">
 						Built for people who value their time
 					</h2>
@@ -542,10 +584,10 @@ function UseCases() {
 				</div>
 
 				<div className="grid md:grid-cols-3 gap-8">
-					{cases.map(({ emoji, title, desc }) => (
+					{cases.map(({ emoji, title, desc }, i) => (
 						<div
 							key={title}
-							className="bg-slate-50 rounded-2xl p-8 border border-slate-200"
+							className={`bg-slate-50 rounded-2xl p-8 border border-slate-200 fade-in-up stagger-${i + 1}`}
 						>
 							<div className="text-5xl mb-4">{emoji}</div>
 							<h3 className="font-bold text-xl mb-3 font-display">{title}</h3>
