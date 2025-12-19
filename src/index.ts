@@ -15,6 +15,8 @@ import type { Env, QueueMessage } from "./types";
 // Export Durable Object agent classes for Cloudflare
 export { EchoAgent } from "./agents/echo-agent";
 export { InfoAgent } from "./agents/info-agent";
+export { ResearchAgent } from "./agents/research-agent";
+export { SummarizeAgent } from "./agents/summarize-agent";
 
 // Create Hono app with environment bindings
 const app = new Hono<{ Bindings: Env }>();

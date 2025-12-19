@@ -50,6 +50,14 @@ export const info_agent = DurableObjectNamespace("mta-info_agent", {
 	className: `InfoAgent`,
 });
 
+export const research_agent = DurableObjectNamespace("mta-research_agent", {
+	className: `ResearchAgent`,
+});
+
+export const summarize_agent = DurableObjectNamespace("mta-summarize_agent", {
+	className: `SummarizeAgent`,
+});
+
 // Main worker
 export const worker = await Worker("mail-to-ai", {
 	name: `${app.name}-${app.stage}`,
@@ -63,6 +71,8 @@ export const worker = await Worker("mail-to-ai", {
 		EMAIL_DLQ: email_dlq,
 		ECHO_AGENT: echo_agent,
 		INFO_AGENT: info_agent,
+		RESEARCH_AGENT: research_agent,
+		SUMMARIZE_AGENT: summarize_agent,
 
 		ALLOWED_DOMAIN: "mail-to-ai.com",
 

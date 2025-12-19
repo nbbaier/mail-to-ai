@@ -10,10 +10,12 @@ import { extractAgentName } from "../utils/email-parser";
  */
 const AGENT_REGISTRY: Map<
 	string,
-	keyof Pick<Env, "ECHO_AGENT" | "INFO_AGENT">
+	keyof Pick<Env, "ECHO_AGENT" | "INFO_AGENT" | "RESEARCH_AGENT" | "SUMMARIZE_AGENT">
 > = new Map([
 	["echo", "ECHO_AGENT"],
 	["info", "INFO_AGENT"],
+	["research", "RESEARCH_AGENT"],
+	["summarize", "SUMMARIZE_AGENT"],
 ]);
 
 /**

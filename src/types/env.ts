@@ -10,6 +10,8 @@ export interface Env {
 	// Durable Object bindings for Agents SDK
 	ECHO_AGENT: DurableObjectNamespace;
 	INFO_AGENT: DurableObjectNamespace;
+	RESEARCH_AGENT: DurableObjectNamespace;
+	SUMMARIZE_AGENT: DurableObjectNamespace;
 
 	// KV namespace for caching and rate limiting
 	CACHE_KV: KVNamespace;
