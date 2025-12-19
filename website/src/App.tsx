@@ -1,4 +1,11 @@
-import { useEffect, useRef, type RefObject } from "react";
+import {
+	File02Icon,
+	InformationCircleIcon,
+	Search02Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+
+import { type RefObject, useEffect, useRef } from "react";
 
 const DOMAIN = "mail-to-ai.com";
 
@@ -17,11 +24,15 @@ function useScrollReveal<T extends HTMLElement>(): RefObject<T | null> {
 					}
 				});
 			},
-			{ threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+			{ threshold: 0.1, rootMargin: "0px 0px -50px 0px" },
 		);
 
 		const fadeElements = element.querySelectorAll(".fade-in-up");
-		fadeElements.forEach((el) => observer.observe(el));
+		fadeElements.forEach((el) => {
+			if (el) {
+				observer.observe(el);
+			}
+		});
 
 		return () => observer.disconnect();
 	}, []);
@@ -42,27 +53,19 @@ function Hero() {
 
 			<div className="relative max-w-6xl mx-auto px-6 py-24 md:py-32">
 				<div className="max-w-4xl">
-					<div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-cyan-500/10 backdrop-blur-sm rounded-full text-sm font-medium border border-cyan-400/20 hero-animate hero-delay-1">
-						<span className="relative flex h-2 w-2">
-							<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-							<span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
-						</span>
-						Agents working right now
-					</div>
-
-					<h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight font-display hero-animate hero-delay-2">
+					<h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight font-display hero-animate hero-delay-1">
 						Send a request.
 						<br />
 						<span className="gradient-text">Get back to your life.</span>
 					</h1>
 
-					<p className="text-xl md:text-2xl text-slate-300 mb-12 leading-relaxed max-w-3xl hero-animate hero-delay-3">
+					<p className="text-xl md:text-2xl text-slate-300 mb-12 leading-relaxed max-w-3xl hero-animate hero-delay-2">
 						Real autonomous agents that work while you're offline.
 						Fire-and-forget workflows via email. No apps, no waiting, no
 						babysitting.
 					</p>
 
-					<div className="flex flex-col sm:flex-row gap-4 items-start hero-animate hero-delay-4">
+					<div className="flex flex-col sm:flex-row gap-4 items-start hero-animate hero-delay-3">
 						<a
 							href="#built-in"
 							className="px-8 py-4 bg-cyan-500 text-white font-semibold rounded-lg shadow-lg hover:bg-cyan-600 transition transform hover:scale-105"
@@ -78,7 +81,7 @@ function Hero() {
 					</div>
 				</div>
 
-				<div className="mt-20 max-w-2xl hero-animate hero-delay-5">
+				<div className="mt-20 max-w-2xl hero-animate hero-delay-4">
 					<div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8">
 						<div className="space-y-6">
 							<div className="flex items-start gap-4">
@@ -101,6 +104,7 @@ function Hero() {
 										fill="none"
 										viewBox="0 0 24 24"
 									>
+										<title>Processing</title>
 										<circle
 											className="opacity-25"
 											cx="12"
@@ -167,10 +171,11 @@ function ProblemSolution() {
 								<li key={item} className="flex items-start gap-3">
 									<svg
 										className="w-6 h-6 text-red-500 mt-0.5 shrink-0"
-										fill="none"
+										fill="no ne"
 										stroke="currentColor"
 										viewBox="0 0 24 24"
 									>
+										<title>Cross icon</title>
 										<path
 											strokeLinecap="round"
 											strokeLinejoin="round"
@@ -210,6 +215,7 @@ function ProblemSolution() {
 										stroke="currentColor"
 										viewBox="0 0 24 24"
 									>
+										<title>Check icon</title>
 										<path
 											strokeLinecap="round"
 											strokeLinejoin="round"
@@ -248,47 +254,33 @@ function BuiltInAgents() {
 					</p>
 				</div>
 
-				<div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+				<div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto auto-rows-fr">
 					<div className="fade-in-up stagger-1">
-					<AgentCard
-						badge="DEEP WORK"
-						badgeColor="blue"
-						title="Research Agent"
-						email={`research@${DOMAIN}`}
-						iconColor="from-blue-500 to-cyan-500"
-						icon={
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-							/>
-						}
-						description="Multi-source web research with synthesis, citations, and structured reports. Perfect for competitive analysis, market research, technical deep-dives."
-						example='"Compare the pricing models and target markets of the top 5 project management tools used by remote teams in 2024"'
-						time="30-120 min typical"
-					/>
+						<AgentCard
+							badge="DEEP WORK"
+							badgeColor="blue"
+							title="Research Agent"
+							email={`research@${DOMAIN}`}
+							iconColor="from-blue-500 to-cyan-500"
+							icon={<HugeiconsIcon icon={Search02Icon} />}
+							description="Multi-source web research with synthesis, citations, and structured reports. Perfect for competitive analysis, market research, technical deep-dives."
+							example='"Compare the pricing models and target markets of the top 5 project management tools used by remote teams in 2024"'
+							time="30-120 min typical"
+						/>
 					</div>
 
 					<div className="fade-in-up stagger-2">
-					<AgentCard
-						badge="FAST TRACK"
-						badgeColor="emerald"
-						title="Summarize Agent"
-						email={`summarize@${DOMAIN}`}
-						iconColor="from-emerald-500 to-teal-500"
-						icon={
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-							/>
-						}
-						description="Intelligent summarization of long email threads, articles, documents. Extracts key points, action items, decisions made."
-						example='Forward a 52-email thread: "Summarize this discussion and tell me what we decided about the launch timeline"'
-						time="5-20 min typical"
-					/>
+						<AgentCard
+							badge="FAST TRACK"
+							badgeColor="emerald"
+							title="Summarize Agent"
+							email={`summarize@${DOMAIN}`}
+							iconColor="from-emerald-500 to-teal-500"
+							icon={<HugeiconsIcon icon={File02Icon} />}
+							description="Intelligent summarization of long email threads, articles, documents. Extracts key points, action items, decisions made."
+							example='Forward a 52-email thread: "Summarize this discussion and tell me what we decided about the launch timeline"'
+							time="5-20 min typical"
+						/>
 					</div>
 				</div>
 
@@ -300,20 +292,12 @@ function BuiltInAgents() {
 						href={`mailto:info@${DOMAIN}`}
 						className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300 transition"
 					>
-						<svg
-							className="w-5 h-5"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
-						Email info@{DOMAIN}
+						<HugeiconsIcon
+							icon={InformationCircleIcon}
+							size={20}
+							className="mr-1"
+						/>
+						info@{DOMAIN}
 					</a>
 				</div>
 			</div>
@@ -352,7 +336,7 @@ function AgentCard({
 		badgeColor === "blue" ? "text-blue-600" : "text-emerald-600";
 
 	return (
-		<div className="card-hover bg-white rounded-3xl p-8 border-2 border-slate-200 shadow-lg">
+		<div className="card-hover bg-white rounded-3xl p-8 border-2 border-slate-200 shadow-lg h-full flex flex-col">
 			<div className="flex items-start justify-between mb-6">
 				<div>
 					<div
@@ -370,7 +354,7 @@ function AgentCard({
 					</code>
 				</div>
 				<div
-					className={`w-16 h-16 bg-gradient-to-br ${iconColor} rounded-2xl flex items-center justify-center shrink-0 shadow-lg`}
+					className={`w-16 h-16 bg-linear-to-br ${iconColor} rounded-2xl flex items-center justify-center shrink-0 shadow-lg`}
 				>
 					<svg
 						className="w-8 h-8 text-white"
@@ -378,6 +362,7 @@ function AgentCard({
 						stroke="currentColor"
 						viewBox="0 0 24 24"
 					>
+						<title>Agent icon</title>
 						{icon}
 					</svg>
 				</div>
@@ -392,7 +377,7 @@ function AgentCard({
 				<p className="text-sm text-slate-700 leading-relaxed">{example}</p>
 			</div>
 
-			<div className="flex items-center justify-between text-sm">
+			<div className="flex items-center justify-between text-sm mt-auto">
 				<div className="flex items-center gap-2 text-slate-500">
 					<svg
 						className="w-4 h-4"
@@ -400,6 +385,7 @@ function AgentCard({
 						stroke="currentColor"
 						viewBox="0 0 24 24"
 					>
+						<title>Clock icon</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -420,6 +406,7 @@ function AgentCard({
 						stroke="currentColor"
 						viewBox="0 0 24 24"
 					>
+						<title>Arrow icon</title>
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
@@ -463,7 +450,7 @@ function CustomAgents() {
 		<section
 			ref={ref}
 			id="custom"
-			className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden"
+			className="py-24 bg-linear-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden"
 		>
 			<div className="absolute top-0 right-0 w-1/3 h-full opacity-10">
 				<svg
@@ -471,6 +458,7 @@ function CustomAgents() {
 					xmlns="http://www.w3.org/2000/svg"
 					className="w-full h-full"
 				>
+					<title>Agent icon</title>
 					<path
 						fill="currentColor"
 						d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.6,90,-16.3,88.5,-0.9C87,14.6,81.4,29.2,73.1,42.8C64.8,56.4,53.8,69,40.1,76.8C26.4,84.6,10,87.6,-5.8,87.1C-21.6,86.6,-36.8,82.6,-49.5,74.5C-62.2,66.4,-72.4,54.2,-78.9,40.2C-85.4,26.2,-88.2,10.4,-86.8,-4.9C-85.4,-20.2,-79.8,-35,-71.1,-47.8C-62.4,-60.6,-50.6,-71.4,-37.3,-79C-24,-86.6,-9.3,-91,4.7,-89.3C18.7,-87.6,30.6,-83.6,44.7,-76.4Z"
@@ -505,7 +493,7 @@ function CustomAgents() {
 								"Meta-agent creates a specialized agent on the fly",
 								"Your custom agent processes the request and replies",
 							].map((text, i) => (
-								<div key={i}>
+								<div key={text}>
 									<div className="w-12 h-12 bg-cyan-500/20 border border-cyan-400/30 rounded-xl flex items-center justify-center text-2xl font-bold mx-auto mb-3 text-cyan-400">
 										{i + 1}
 									</div>
@@ -555,17 +543,14 @@ function UseCases() {
 
 	const cases = [
 		{
-			emoji: "👨‍💼",
 			title: "Founders & Executives",
 			desc: "Queue up competitive analysis, market research, and strategic reports in the morning. Review completed work in the afternoon.",
 		},
 		{
-			emoji: "🔬",
 			title: "Researchers & Analysts",
 			desc: "Send multiple research requests overnight. Wake up to comprehensive reports with citations ready for review.",
 		},
 		{
-			emoji: "✍️",
 			title: "Writers & Creators",
 			desc: "Delegate background research and fact-checking while you focus on creating. Get sourced information delivered to your inbox.",
 		},
@@ -584,12 +569,11 @@ function UseCases() {
 				</div>
 
 				<div className="grid md:grid-cols-3 gap-8">
-					{cases.map(({ emoji, title, desc }, i) => (
+					{cases.map(({ title, desc }, i) => (
 						<div
 							key={title}
 							className={`bg-slate-50 rounded-2xl p-8 border border-slate-200 fade-in-up stagger-${i + 1}`}
 						>
-							<div className="text-5xl mb-4">{emoji}</div>
 							<h3 className="font-bold text-xl mb-3 font-display">{title}</h3>
 							<p className="text-slate-600 text-sm leading-relaxed">{desc}</p>
 						</div>
@@ -602,7 +586,10 @@ function UseCases() {
 
 function FinalCTA() {
 	return (
-		<section className="py-20 bg-gradient-to-br from-cyan-600 to-blue-600 text-white">
+		<section
+			className="py-20 bg-linear-to-br from-cyan-600 to-blue-600 text-white"
+			aria-label="Final CTA"
+		>
 			<div className="max-w-4xl mx-auto px-6 text-center">
 				<h2 className="text-4xl md:text-5xl font-bold mb-6 font-display">
 					Stop waiting. Start delegating.

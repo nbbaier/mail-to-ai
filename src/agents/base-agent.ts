@@ -182,13 +182,29 @@ ${email.body}`.trim();
 			// Italic
 			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
 			// Links
-			.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+			.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+			// Headings (h1-h3)
+			.replace(/^### (.+)$/gm, "<h3>$1</h3>")
+			.replace(/^## (.+)$/gm, "<h2>$1</h2>")
+			.replace(/^# (.+)$/gm, "<h1>$1</h1>")
+			// Horizontal rules
+			.replace(/^---$/gm, "<hr>")
+			// Unordered lists
+			.replace(/^- (.+)$/gm, "<li>$1</li>");
 
 		// Convert paragraphs
 		const paragraphs = html.split("\n\n");
 		const htmlParagraphs = paragraphs.map((p) => {
 			// Don't wrap pre blocks in paragraphs
 			if (p.includes("<pre>")) return p;
+			// Don't wrap headings in paragraphs
+			if (p.match(/^<h[1-3]>/)) return p;
+			// Don't wrap hr in paragraphs
+			if (p.trim() === "<hr>") return p;
+			// Wrap consecutive list items in ul
+			if (p.includes("<li>")) {
+				return `<ul>${p.replace(/<br>/g, "")}</ul>`;
+			}
 			return `<p>${p.replace(/\n/g, "<br>")}</p>`;
 		});
 
@@ -204,6 +220,12 @@ ${email.body}`.trim();
       max-width: 600px;
     }
     p { margin: 1em 0; }
+    h1 { font-size: 1.5em; margin: 1.2em 0 0.6em; }
+    h2 { font-size: 1.3em; margin: 1.1em 0 0.5em; }
+    h3 { font-size: 1.1em; margin: 1em 0 0.4em; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    li { margin: 0.3em 0; }
+    hr { margin: 1.5em 0; border: none; border-top: 1px solid #ddd; }
     code {
       background: #f4f4f4;
       padding: 2px 6px;
