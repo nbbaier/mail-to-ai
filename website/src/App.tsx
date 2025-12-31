@@ -8,6 +8,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import { type RefObject, useEffect, useRef, useState } from "react";
 import Guide from "./Guide";
+import { UseCases } from "./use-cases";
 
 const DOMAIN = "mail-to-ai.com";
 
@@ -69,14 +70,14 @@ function Hero() {
 
 					<div className="flex flex-col sm:flex-row gap-4 items-start hero-animate hero-delay-3">
 						<a
-							href="#built-in"
-							className="px-8 py-4 bg-cyan-500 text-white font-semibold rounded-lg shadow-lg hover:bg-cyan-600 transition transform hover:scale-105"
+							href={`mailto:research@${DOMAIN}`}
+							className="px-8 py-4 bg-cyan-500 text-white font-semibold rounded-lg shadow-lg hover:bg-cyan-600 transition-colors cursor-pointer"
 						>
-							See Built-in Agents
+							Try Research Agent
 						</a>
 						<a
 							href="#custom"
-							className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 font-semibold rounded-lg hover:bg-white/20 transition"
+							className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 font-semibold rounded-lg hover:bg-white/20 transition-colors cursor-pointer"
 						>
 							Or Create Your Own
 						</a>
@@ -84,25 +85,25 @@ function Hero() {
 				</div>
 
 				<div className="mt-20 max-w-2xl hero-animate hero-delay-4">
-					<div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-8">
-						<div className="space-y-6">
-							<div className="flex items-start gap-4">
-								<div className="shrink-0 w-16 text-sm text-slate-400 font-mono">
+					<div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl p-4 md:p-8">
+						<div className="space-y-4 md:space-y-6">
+							<div className="flex items-start gap-2 md:gap-4">
+								<div className="shrink-0 w-12 md:w-16 text-xs md:text-sm text-slate-400 font-mono">
 									9:47 AM
 								</div>
 								<div className="flex-1">
-									<div className="bg-cyan-600 rounded-2xl rounded-tl-sm p-4 text-white text-sm max-w-md">
+									<div className="bg-cyan-600 rounded-2xl rounded-tl-sm p-3 md:p-4 text-white text-xs md:text-sm max-w-md">
 										Research the top 10 AI email automation companies, their
 										funding rounds, and key product differences
 									</div>
 								</div>
 							</div>
 
-							<div className="flex items-center gap-3 py-4">
+							<div className="flex items-center gap-2 md:gap-3 py-3 md:py-4">
 								<div className="flex-1 h-px bg-slate-700" />
-								<div className="flex items-center gap-2 text-cyan-400 text-sm font-mono px-3 py-1 rounded-full pulse-glow">
+								<div className="flex items-center gap-2 text-cyan-400 text-xs md:text-sm font-mono px-2 md:px-3 py-1 rounded-full pulse-glow">
 									<svg
-										className="w-4 h-4 animate-spin"
+										className="w-3 h-3 md:w-4 md:h-4 animate-spin"
 										fill="none"
 										viewBox="0 0 24 24"
 									>
@@ -121,17 +122,18 @@ function Hero() {
 											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 										/>
 									</svg>
-									<span>agent processing</span>
+									<span className="hidden sm:inline">agent processing</span>
+									<span className="sm:hidden">processing</span>
 								</div>
 								<div className="flex-1 h-px bg-slate-700" />
 							</div>
 
-							<div className="flex items-start gap-4">
-								<div className="shrink-0 w-16 text-sm text-slate-400 font-mono">
+							<div className="flex items-start gap-2 md:gap-4">
+								<div className="shrink-0 w-12 md:w-16 text-xs md:text-sm text-slate-400 font-mono">
 									2:34 PM
 								</div>
 								<div className="flex-1 text-right">
-									<div className="bg-slate-700 border border-slate-600 rounded-2xl rounded-tr-sm p-4 text-slate-200 text-sm inline-block max-w-md">
+									<div className="bg-slate-700 border border-slate-600 rounded-2xl rounded-tr-sm p-3 md:p-4 text-slate-200 text-xs md:text-sm inline-block max-w-md">
 										Complete research report with 10 companies analyzed, funding
 										data verified, comparison table attached →
 									</div>
@@ -140,13 +142,45 @@ function Hero() {
 						</div>
 					</div>
 
-					<p className="text-center text-slate-400 text-sm mt-6">
+					<p className="text-center text-slate-400 text-xs md:text-sm mt-4 md:mt-6 px-4">
 						<span className="text-cyan-400">~5 hours of autonomous work</span>{" "}
-						while you had meetings, lunch, focused time
+						<span className="hidden sm:inline">while you had meetings, lunch, focused time</span>
+						<span className="sm:hidden">while you were busy</span>
 					</p>
 				</div>
 			</div>
 		</header>
+	);
+}
+
+function TrustSignals() {
+	return (
+		<section className="py-12 bg-white border-b border-slate-200">
+			<div className="max-w-6xl mx-auto px-6">
+				<div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
+					<div className="text-center">
+						<p className="text-sm text-slate-500 mb-2">Powered by</p>
+						<div className="flex items-center gap-3">
+							<span className="text-lg font-semibold text-slate-700">Cloudflare Workers</span>
+						</div>
+					</div>
+					<div className="hidden md:block w-px h-12 bg-slate-200" />
+					<div className="text-center">
+						<p className="text-sm text-slate-500 mb-2">AI by</p>
+						<div className="flex items-center gap-3">
+							<span className="text-lg font-semibold text-slate-700">Claude (Anthropic)</span>
+						</div>
+					</div>
+					<div className="hidden md:block w-px h-12 bg-slate-200" />
+					<div className="text-center">
+						<p className="text-sm text-slate-500 mb-2">Built for</p>
+						<div className="flex items-center gap-3">
+							<span className="text-lg font-semibold text-slate-700">inbound.new Hackathon</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 	);
 }
 
@@ -249,14 +283,14 @@ function BuiltInAgents() {
 						Ready to Use
 					</div>
 					<h2 className="text-4xl md:text-5xl font-bold mb-4 font-display">
-						Two Built-in Agents
+						Three Built-in Agents
 					</h2>
 					<p className="text-xl text-slate-600 max-w-2xl mx-auto">
-						Specialized agents optimized for the most common async workflows
+						Specialized agents optimized for the most common workflows
 					</p>
 				</div>
 
-				<div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto auto-rows-fr">
+				<div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto auto-rows-fr">
 					<div className="fade-in-up stagger-1">
 						<AgentCard
 							badge="DEEP WORK"
@@ -267,7 +301,7 @@ function BuiltInAgents() {
 							icon={<HugeiconsIcon icon={Search02Icon} />}
 							description="Multi-source web research with synthesis, citations, and structured reports. Perfect for competitive analysis, market research, technical deep-dives."
 							example='"Compare the pricing models and target markets of the top 5 project management tools used by remote teams in 2024"'
-							// time="30-120 min typical"
+							time="30-120 min typical"
 						/>
 					</div>
 
@@ -281,12 +315,26 @@ function BuiltInAgents() {
 							icon={<HugeiconsIcon icon={File02Icon} />}
 							description="Intelligent summarization of long email threads, articles, documents. Extracts key points, action items, decisions made."
 							example='Forward a 52-email thread: "Summarize this discussion and tell me what we decided about the launch timeline"'
-							// time="5-20 min typical"
+							time="5-20 min typical"
+						/>
+					</div>
+
+					<div className="fade-in-up stagger-3">
+						<AgentCard
+							badge="INSTANT"
+							badgeColor="blue"
+							title="Info Agent"
+							email={`info@${DOMAIN}`}
+							iconColor="from-purple-500 to-indigo-500"
+							icon={<HugeiconsIcon icon={InformationCircleIcon} />}
+							description="Get help understanding the service, available agents, and best practices. Your guide to making the most of Mail-to-AI."
+							example='"How does the custom agent feature work? Can you give me some examples?"'
+							time="instant"
 						/>
 					</div>
 				</div>
 
-				<div className="mt-12 text-center fade-in-up stagger-3">
+				<div className="mt-12 text-center fade-in-up stagger-4">
 					<p className="text-slate-600 mb-4">
 						Want to learn more about how the service works?
 					</p>
@@ -409,7 +457,7 @@ function AgentCard({
 
 				<a
 					href={`mailto:${email}`}
-					className="text-cyan-600 font-semibold hover:text-cyan-700 flex items-center gap-1"
+					className="text-cyan-600 font-semibold hover:text-cyan-700 transition-colors cursor-pointer flex items-center gap-1"
 				>
 					Try it now
 					<svg
@@ -517,9 +565,10 @@ function CustomAgents() {
 
 					<div className="space-y-4">
 						{examples.map(({ email, desc }, i) => (
-							<div
+							<a
 								key={email}
-								className={`bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 fade-in-up stagger-${Math.min(i + 2, 5)}`}
+								href={`mailto:${email}`}
+								className={`block bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 hover:border-cyan-500/50 hover:bg-slate-800 transition-colors cursor-pointer fade-in-up stagger-${Math.min(i + 2, 5)}`}
 							>
 								<div className="flex flex-col md:flex-row md:items-center gap-4">
 									<code className="text-cyan-400 font-mono text-sm md:text-base shrink-0">
@@ -528,7 +577,7 @@ function CustomAgents() {
 									<div className="hidden md:block text-slate-600">→</div>
 									<p className="text-slate-300 text-sm">{desc}</p>
 								</div>
-							</div>
+							</a>
 						))}
 					</div>
 
@@ -539,7 +588,7 @@ function CustomAgents() {
 						</p>
 						<a
 							href={`mailto:your-custom-agent@${DOMAIN}`}
-							className="inline-block px-8 py-4 bg-cyan-500 text-white font-semibold rounded-lg shadow-lg hover:bg-cyan-600 transition transform hover:scale-105"
+							className="inline-block px-8 py-4 bg-cyan-500 text-white font-semibold rounded-lg shadow-lg hover:bg-cyan-600 transition-colors cursor-pointer"
 						>
 							Create Your First Custom Agent
 						</a>
@@ -567,16 +616,55 @@ function FinalCTA() {
 				<div className="flex flex-col sm:flex-row gap-4 justify-center">
 					<a
 						href={`mailto:research@${DOMAIN}`}
-						className="px-8 py-4 bg-white text-cyan-600 font-semibold rounded-lg shadow-lg hover:bg-cyan-50 transition transform hover:scale-105"
+						className="px-8 py-4 bg-white text-cyan-600 font-semibold rounded-lg shadow-lg hover:bg-cyan-50 transition-colors cursor-pointer"
 					>
 						Try Research Agent
 					</a>
 					<a
 						href={`mailto:summarize@${DOMAIN}`}
-						className="px-8 py-4 bg-cyan-500/20 backdrop-blur-sm border-2 border-white/30 font-semibold rounded-lg hover:bg-cyan-500/30 transition"
+						className="px-8 py-4 bg-cyan-500/20 backdrop-blur-sm border-2 border-white/30 font-semibold rounded-lg hover:bg-cyan-500/30 transition-colors cursor-pointer"
 					>
 						Try Summarize Agent
 					</a>
+				</div>
+			</div>
+		</section>
+	);
+}
+
+function PrivacyNote() {
+	return (
+		<section className="py-16 bg-slate-50 border-t border-slate-200">
+			<div className="max-w-4xl mx-auto px-6 text-center">
+				<h3 className="text-2xl font-bold text-slate-900 mb-4 font-display">
+					Privacy & Security
+				</h3>
+				<p className="text-slate-600 mb-6 leading-relaxed">
+					Your email content is processed to generate responses and maintain conversation history for thread continuity.
+					We never share your data with third parties. Built on enterprise-grade Cloudflare infrastructure.
+				</p>
+				<div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
+					<div className="flex items-center gap-2">
+						<svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<title>Check icon</title>
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+						</svg>
+						<span>No data sharing</span>
+					</div>
+					<div className="flex items-center gap-2">
+						<svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<title>Check icon</title>
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+						</svg>
+						<span>Enterprise infrastructure</span>
+					</div>
+					<div className="flex items-center gap-2">
+						<svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<title>Check icon</title>
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+						</svg>
+						<span>Free during beta</span>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -677,10 +765,13 @@ function LandingPage() {
 	return (
 		<div className="bg-slate-50 text-gray-900 font-sans">
 			<Hero />
+			<TrustSignals />
 			<ProblemSolution />
+			<UseCases />
 			<BuiltInAgents />
 			<CustomAgents />
 			<FinalCTA />
+			<PrivacyNote />
 			<Footer />
 		</div>
 	);

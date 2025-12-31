@@ -11,8 +11,8 @@
   "kv_namespaces": [
     {
       "binding": "CACHE_KV",
-      "id": "8ef5ef68d0c7439ba06e21b8a9968f20",
-      "preview_id": "8ef5ef68d0c7439ba06e21b8a9968f20"
+      "id": "mta-cache_kv",
+      "preview_id": "mta-cache_kv"
     }
   ],
   "durable_objects": {
@@ -56,11 +56,11 @@
     "producers": [
       {
         "binding": "EMAIL_QUEUE",
-        "queue": "658375bff4da42b89bb129f59e729aef"
+        "queue": "mta-email_queue"
       },
       {
         "binding": "EMAIL_DLQ",
-        "queue": "b22ed96dc2a941219026936d4e26328f"
+        "queue": "mta-email_dlq"
       }
     ]
   },
