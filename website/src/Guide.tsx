@@ -27,7 +27,11 @@ function Section({
 	id,
 	title,
 	children,
-}: { id: string; title: string; children: React.ReactNode }) {
+}: {
+	id: string;
+	title: string;
+	children: React.ReactNode;
+}) {
 	return (
 		<section id={id} className="scroll-mt-8">
 			<h2 className="text-2xl font-bold text-slate-900 mb-4 font-display border-b border-slate-200 pb-2">
@@ -42,7 +46,11 @@ function EmailExample({
 	to,
 	subject,
 	body,
-}: { to: string; subject: string; body: string }) {
+}: {
+	to: string;
+	subject: string;
+	body: string;
+}) {
 	return (
 		<div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
 			<div className="bg-slate-50 px-4 py-2 border-b border-slate-200 text-sm">
@@ -361,9 +369,8 @@ Is there a more efficient way to write this?`}
 									✅ Be Specific
 								</h4>
 								<p className="text-slate-600 text-sm">
-									The more context you provide, the better the response.
-									Include relevant details, constraints, and your intended use
-									case.
+									The more context you provide, the better the response. Include
+									relevant details, constraints, and your intended use case.
 								</p>
 							</div>
 

@@ -30,7 +30,7 @@ This is ambitious because it requires:
 
 5. **Reliability at a new level**: Current agents can fail silently. Autonomous agents managing real work can't—they need self-healing, graceful degradation, and human escalation.
 
-6. **Trust and alignment**: Current agents do what you ask. Autonomous agents must do what you *would* ask—interpreting intent, handling edge cases, and knowing when to escalate.
+6. **Trust and alignment**: Current agents do what you ask. Autonomous agents must do what you _would_ ask—interpreting intent, handling edge cases, and knowing when to escalate.
 
 This isn't iterating on what exists. It's building something that doesn't yet exist anywhere—not in OpenAI, not in Google, not anywhere. It's **hard**.
 
@@ -39,6 +39,7 @@ That's why it's a moonshot.
 ## Current State
 
 Mail-to-AI today is:
+
 - **Reactive**: Agents wait for emails
 - **Single-turn dominant**: Even with threading, each email is largely independent
 - **Human-initiated**: Every action starts with a human email
@@ -211,6 +212,7 @@ Task: "Plan and execute a product launch"
 ## Key Deliverables
 
 ### Phase 1: Autonomous Primitives
+
 - [ ] Implement long-running agent framework (persistent state, scheduled execution)
 - [ ] Build agent goal system (objectives, success criteria, completion detection)
 - [ ] Create self-reflection mechanism (agent evaluates its own progress)
@@ -218,6 +220,7 @@ Task: "Plan and execute a product launch"
 - [ ] Build retry and recovery systems (handle failures gracefully)
 
 ### Phase 2: Multi-Agent Coordination
+
 - [ ] Design inter-agent communication protocol
 - [ ] Implement agent spawning (create sub-agents for subtasks)
 - [ ] Build shared context/memory between agents
@@ -225,6 +228,7 @@ Task: "Plan and execute a product launch"
 - [ ] Implement resource allocation and scheduling
 
 ### Phase 3: Human Supervision
+
 - [ ] Build real-time agent monitoring dashboard
 - [ ] Implement approval workflows for high-risk actions
 - [ ] Create audit logging for all agent actions
@@ -232,6 +236,7 @@ Task: "Plan and execute a product launch"
 - [ ] Implement escalation pathways (agent → human)
 
 ### Phase 4: Trust & Safety
+
 - [ ] Implement action classification (low/medium/high risk)
 - [ ] Build sandboxed execution environments
 - [ ] Create spending/resource limits per agent
@@ -239,6 +244,7 @@ Task: "Plan and execute a product launch"
 - [ ] Build explanation generation (why did the agent do this?)
 
 ### Phase 5: Production Scale
+
 - [ ] Build agent lifecycle management (create, pause, resume, terminate)
 - [ ] Implement agent templates for common use cases
 - [ ] Create agent performance analytics
@@ -265,22 +271,26 @@ This is why the moonshot comes last. It's the apex of the pyramid.
 ## Risks & Open Questions
 
 ### Technical Risks
+
 - **Cloudflare limits**: Workers have execution limits. Long-running agents need creative solutions (Durable Objects with alarms, external orchestration).
 - **State management**: Agent state over days/weeks is complex. What happens if infrastructure changes?
 - **Failure modes**: Long-running systems have novel failure modes. How do we detect and recover from stuck agents?
 
 ### AI Safety Risks
+
 - **Goal misalignment**: Agent pursues objective in unintended ways. How do we constrain without crippling?
 - **Runaway costs**: Agent calls expensive APIs in a loop. Hard limits are essential but may break valid use cases.
 - **Unintended consequences**: Agent takes action that can't be undone. How do we make agents reversible?
 - **Prompt injection at scale**: Malicious input to long-running agent. Need robust filtering and isolation.
 
 ### Business Risks
+
 - **Liability**: If an agent makes a mistake, who's responsible? Terms of service and insurance implications.
 - **User trust**: Autonomous agents are scary. How do we build trust incrementally?
 - **Competition**: This is a hard problem. Others (OpenAI, Anthropic) are working on it. What's our moat?
 
 ### Open Questions
+
 - **How autonomous is too autonomous?** Where's the line between useful delegation and dangerous automation?
 - **What's the supervision interface?** Email? Dashboard? Mobile app? All three?
 - **How do we price this?** Per-agent? Per-action? Per-outcome?
@@ -323,4 +333,4 @@ If any product can make autonomous AI agents real, it's this one.
 
 ---
 
-*"The best way to predict the future is to invent it." — Alan Kay*
+_"The best way to predict the future is to invent it." — Alan Kay_

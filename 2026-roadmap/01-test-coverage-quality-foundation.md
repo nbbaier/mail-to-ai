@@ -20,6 +20,7 @@ Test coverage isn't just about catching bugs; it's about **confidence**. Confide
 - No mocking infrastructure for external services (Anthropic, inbound.new)
 
 **Risk areas without tests:**
+
 - `email-parser.ts` (131 lines) - parses untrusted webhook input
 - `rate-limiter.ts` (128 lines) - prevents abuse, currently blindly trusted
 - `safety-validator.ts` (108 lines) - security boundary, regex-based
@@ -58,6 +59,7 @@ test/
 ```
 
 **Coverage targets:**
+
 - Unit tests: 90%+ coverage on `utils/` and `services/`
 - Integration tests: All agent types, rate limiting, safety validation
 - E2E tests: Happy path and error scenarios
@@ -94,12 +96,14 @@ None - this is foundational work that should happen first.
 **Priority justification**: This is ranked #1 because it's a force multiplier. Every other initiative benefits from having tests. Refactoring for enterprise features? Tests catch regressions. Adding new agent tools? Tests verify integration. Building the SDK? Tests document expected behavior.
 
 **Relevant files to test first (by risk):**
+
 - `src/utils/email-parser.ts` - parses untrusted input
 - `src/utils/safety-validator.ts` - security boundary
 - `src/utils/rate-limiter.ts` - abuse prevention
 - `src/agents/meta-agent.ts` - complex logic, prompt injection surface
 
 **Quick wins:**
+
 - `email-parser.ts` is pure functions—easy to unit test
 - `safety-validator.ts` blocklist is static—snapshot testing works well
 - `rate-limiter.ts` uses KV which can be easily mocked

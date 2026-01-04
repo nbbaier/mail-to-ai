@@ -144,7 +144,9 @@ function Hero() {
 
 					<p className="text-center text-slate-400 text-xs md:text-sm mt-4 md:mt-6 px-4">
 						<span className="text-cyan-400">~5 hours of autonomous work</span>{" "}
-						<span className="hidden sm:inline">while you had meetings, lunch, focused time</span>
+						<span className="hidden sm:inline">
+							while you had meetings, lunch, focused time
+						</span>
 						<span className="sm:hidden">while you were busy</span>
 					</p>
 				</div>
@@ -161,21 +163,27 @@ function TrustSignals() {
 					<div className="text-center">
 						<p className="text-sm text-slate-500 mb-2">Powered by</p>
 						<div className="flex items-center gap-3">
-							<span className="text-lg font-semibold text-slate-700">Cloudflare Workers</span>
+							<span className="text-lg font-semibold text-slate-700">
+								Cloudflare Workers
+							</span>
 						</div>
 					</div>
 					<div className="hidden md:block w-px h-12 bg-slate-200" />
 					<div className="text-center">
 						<p className="text-sm text-slate-500 mb-2">AI by</p>
 						<div className="flex items-center gap-3">
-							<span className="text-lg font-semibold text-slate-700">Claude (Anthropic)</span>
+							<span className="text-lg font-semibold text-slate-700">
+								Claude (Anthropic)
+							</span>
 						</div>
 					</div>
 					<div className="hidden md:block w-px h-12 bg-slate-200" />
 					<div className="text-center">
 						<p className="text-sm text-slate-500 mb-2">Built for</p>
 						<div className="flex items-center gap-3">
-							<span className="text-lg font-semibold text-slate-700">inbound.new Hackathon</span>
+							<span className="text-lg font-semibold text-slate-700">
+								inbound.new Hackathon
+							</span>
 						</div>
 					</div>
 				</div>
@@ -640,28 +648,60 @@ function PrivacyNote() {
 					Privacy & Security
 				</h3>
 				<p className="text-slate-600 mb-6 leading-relaxed">
-					Your email content is processed to generate responses and maintain conversation history for thread continuity.
-					We never share your data with third parties. Built on enterprise-grade Cloudflare infrastructure.
+					Your email content is processed to generate responses and maintain
+					conversation history for thread continuity. We never share your data
+					with third parties. Built on enterprise-grade Cloudflare
+					infrastructure.
 				</p>
 				<div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
 					<div className="flex items-center gap-2">
-						<svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg
+							className="w-5 h-5 text-green-500"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
 							<title>Check icon</title>
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M5 13l4 4L19 7"
+							/>
 						</svg>
 						<span>No data sharing</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg
+							className="w-5 h-5 text-green-500"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
 							<title>Check icon</title>
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M5 13l4 4L19 7"
+							/>
 						</svg>
 						<span>Enterprise infrastructure</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg
+							className="w-5 h-5 text-green-500"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
 							<title>Check icon</title>
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M5 13l4 4L19 7"
+							/>
 						</svg>
 						<span>Free during beta</span>
 					</div>
@@ -728,10 +768,7 @@ function Footer() {
 						<h4 className="text-white font-semibold mb-4">Resources</h4>
 						<ul className="space-y-2 text-sm">
 							<li>
-								<a
-									href="/guide"
-									className="hover:text-cyan-400 transition"
-								>
+								<a href="/guide" className="hover:text-cyan-400 transition">
 									User Guide
 								</a>
 							</li>
