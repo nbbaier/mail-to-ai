@@ -1,0 +1,7 @@
+{
+  "last_failure": "2026-01-04T11:05:27.123609-06:00",
+  "failure_count": 1,
+  "backoff_until": "2026-01-04T11:05:57.123609-06:00",
+  "needs_manual_sync": false,
+  "failure_reason": "failed to create worktree: failed to checkout branch in worktree: exit status 128\nOutput: fatal: Unable to create '/Users/nbbaier/Code/mail-to-ai/.git/beads-worktrees/main/.git/index.lock': Not a directory\n"
+}
