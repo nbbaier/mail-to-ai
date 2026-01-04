@@ -1,33 +1,39 @@
-# Dependencies
-node_modules/
-
-# Build output
-dist/
-.wrangler/
-
-# Environment files
-.env
-.env.local
-.env.*.local
+!.vscode/*.code-snippets
+!.vscode/launch.json
+!.yarn/releases
+.alchemy
 .dev.vars
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
 .DS_Store
-Thumbs.db
-
-# Logs
+.env
+.env.*.local
+.env.local
+.env.production
+.idea/
+.idea/shelf
+.idea/usage.statistics.xml
+.idea/workspace.xml
+.vscode/
+.vscode/*
+.wrangler
+.wrangler/
+.yarn/
 *.log
-npm-debug.log*
-
-# Test coverage
+*.swo
+*.swp
+*.tsbuildinfo
 coverage/
+dist/
+lerna-debug.log*
+logs/
+node_modules/
+npm-debug.log*
+pnpm-debug.log*
+Thumbs.db
+yarn-debug.log*
+yarn-error.log*
 
 # TypeScript
 *.tsbuildinfo
 .alchemy/
+# bv (beads viewer) local config and caches
+.bv/

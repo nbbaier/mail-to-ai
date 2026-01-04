@@ -1,26 +1,32 @@
 {
-  "name": "mail-to-ai",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "test": "vitest",
-    "cf-typegen": "wrangler types"
-  },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
-    "@inboundemail/sdk": "^4.0.0",
-    "@upstash/redis": "^1.34.3",
-    "agents": "^0.2.32",
-    "hono": "^4.6.0",
-    "inboundemail": "^0.19.0"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241205.0",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8",
-    "wrangler": "^3.99.0"
-  }
+	"name": "mail-to-ai",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "alchemy dev",
+		"deploy": "alchemy deploy --adopt",
+		"deploy:prod": "ALCHEMY_STAGE=prod alchemy deploy --adopt",
+		"destroy": "alchemy destroy",
+		"test": "vitest",
+		"typecheck": "tsc --noEmit",
+		"cf-typegen": "wrangler types"
+	},
+	"dependencies": {
+		"@ai-sdk/anthropic": "^2.0.56",
+		"@inboundemail/sdk": "^4.0.0",
+		"agents": "^0.2.32",
+		"ai": "^5.0.115",
+		"alchemy": "^0.81.4",
+		"hono": "^4.6.0",
+		"inboundemail": "^0.19.0",
+		"marked": "^17.0.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.10",
+		"@cloudflare/workers-types": "^4.20241205.0",
+		"typescript": "^5.7.2",
+		"vitest": "^2.1.8",
+		"wrangler": "^4.42.2"
+	}
 }

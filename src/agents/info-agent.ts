@@ -16,8 +16,8 @@ This service provides AI agents accessible via email. No apps, no APIs—just em
 ## Built-in Agents
 - **echo@${this.env.ALLOWED_DOMAIN}** - Test agent that echoes back your message
 - **info@${this.env.ALLOWED_DOMAIN}** - Information about the service (that's you!)
-- **research@${this.env.ALLOWED_DOMAIN}** - Web research on any topic (coming soon)
-- **summarize@${this.env.ALLOWED_DOMAIN}** - Summarize long emails or threads (coming soon)
+- **research@${this.env.ALLOWED_DOMAIN}** - Web research on any topic with cited sources
+- **summarize@${this.env.ALLOWED_DOMAIN}** - Summarize long emails or threads into key points
 - **write@${this.env.ALLOWED_DOMAIN}** - Draft emails, posts, articles (coming soon)
 
 ## Dynamic Agents (Meta-Agent)

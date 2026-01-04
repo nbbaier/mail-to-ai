@@ -4,18 +4,21 @@
  * A Cloudflare Workers application that provides AI agents accessible via email.
  */
 
+import { Inbound } from "@inboundemail/sdk";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { Inbound } from "@inboundemail/sdk";
+import { landing } from "./routes/landing";
 import { webhook } from "./routes/webhook";
 import { processEmail } from "./services/email-processor";
-import { createRedisClient } from "./utils/rate-limiter";
 import type { Env, QueueMessage } from "./types";
 
 // Export Durable Object agent classes for Cloudflare
 export { EchoAgent } from "./agents/echo-agent";
 export { InfoAgent } from "./agents/info-agent";
+export { MetaAgent } from "./agents/meta-agent";
+export { ResearchAgent } from "./agents/research-agent";
+export { SummarizeAgent } from "./agents/summarize-agent";
 
 // Create Hono app with environment bindings
 const app = new Hono<{ Bindings: Env }>();
@@ -25,15 +28,6 @@ app.use("*", logger());
 app.use("*", cors());
 
 // Health check endpoint
-app.get("/", (c) => {
-	return c.json({
-		service: "mail-to-ai",
-		status: "healthy",
-		version: "0.1.0",
-		timestamp: new Date().toISOString(),
-	});
-});
-
 app.get("/health", (c) => {
 	return c.json({
 		status: "ok",
@@ -41,7 +35,8 @@ app.get("/health", (c) => {
 	});
 });
 
-// Mount webhook routes
+// Mount routes
+app.route("/", landing);
 app.route("/webhook", webhook);
 
 // Export the Hono app for Cloudflare Workers
@@ -57,41 +52,52 @@ export default {
 	async queue(
 		batch: MessageBatch<QueueMessage>,
 		env: Env,
-		ctx: ExecutionContext,
+		_ctx: ExecutionContext,
 	): Promise<void> {
-		// Initialize dependencies
-		const redis = createRedisClient(
-			env.UPSTASH_REDIS_REST_URL,
-			env.UPSTASH_REDIS_REST_TOKEN,
-		);
 		const inbound = new Inbound(env.INBOUND_API_KEY);
+		const MAX_PROCESSING_ATTEMPTS = 3;
 
-		const deps = {
-			redis,
-			inbound,
-			env,
-		};
-
-		// Process each message in the batch
 		for (const message of batch.messages) {
-			const { email, attempt } = message.body;
+			const attempts = message.attempts ?? 1;
+			const { email } = message.body;
+			const isFinalAttempt = attempts >= MAX_PROCESSING_ATTEMPTS;
 
-			console.log(`Processing queued email ${email.id} (attempt ${attempt})`);
+			console.log(
+				`Processing queued email ${email.id} (attempt ${attempts}/${MAX_PROCESSING_ATTEMPTS})`,
+			);
 
 			try {
-				const result = await processEmail(email, deps);
+				const result = await processEmail(email, {
+					kv: env.CACHE_KV,
+					inbound,
+					env,
+					notifyOnError: isFinalAttempt,
+				});
 
 				if (result.success) {
-					// Acknowledge successful processing
+					message.ack();
+				} else if (isFinalAttempt) {
+					console.error(
+						`Email ${email.id} failed after ${attempts} attempts: ${result.error}`,
+					);
 					message.ack();
 				} else {
-					// Retry on failure (up to max_retries in wrangler.toml)
-					console.error(`Email ${email.id} failed: ${result.error}`);
+					console.warn(
+						`Email ${email.id} failed on attempt ${attempts}: ${result.error}; retrying...`,
+					);
 					message.retry();
 				}
 			} catch (error) {
-				console.error(`Unexpected error processing email ${email.id}:`, error);
-				message.retry();
+				console.error(
+					`Unexpected error processing email ${email.id} (attempt ${attempts}):`,
+					error,
+				);
+
+				if (isFinalAttempt) {
+					message.ack();
+				} else {
+					message.retry();
+				}
 			}
 		}
 	},

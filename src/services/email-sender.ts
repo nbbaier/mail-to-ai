@@ -95,12 +95,12 @@ export async function sendRateLimitEmail(
 	const resetTime = resetAt.toLocaleTimeString("en-US", {
 		hour: "2-digit",
 		minute: "2-digit",
-		timeZoneName: "short",
+		timeZone: "UTC",
 	});
 
 	const body = `You've reached your hourly limit of email requests.
 
-Your limit will reset at ${resetTime}.
+Your limit will reset at ${resetTime} UTC.
 
 Please try again after that time.
 

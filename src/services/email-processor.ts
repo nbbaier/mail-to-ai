@@ -3,8 +3,7 @@
  */
 
 import type { Inbound } from "@inboundemail/sdk";
-import type { Redis } from "@upstash/redis";
-import type { ParsedEmail, Env } from "../types";
+import type { Env, ParsedEmail } from "../types";
 import { extractAgentName } from "../utils/email-parser";
 import {
 	checkRateLimit,
@@ -19,9 +18,10 @@ import {
 } from "./email-sender";
 
 export interface ProcessorDependencies {
-	redis: Redis;
+	kv: KVNamespace;
 	inbound: Inbound;
 	env: Env;
+	notifyOnError?: boolean;
 }
 
 /**
@@ -37,8 +37,7 @@ export async function processEmail(
 	console.log(`Processing email ${email.id} for agent: ${agentName}`);
 
 	try {
-		// 1. Check rate limit
-		const rateLimit = await checkRateLimit(deps.redis, email.from.email);
+		const rateLimit = await checkRateLimit(deps.kv, email.from.email);
 		if (!rateLimit.allowed) {
 			console.log(`Rate limit exceeded for ${email.from.email}`);
 			await sendRateLimitEmail(
@@ -49,27 +48,24 @@ export async function processEmail(
 				rateLimit.resetAt,
 				`noreply@${deps.env.ALLOWED_DOMAIN}`,
 			);
-			return { success: true }; // Successfully handled (just rate limited)
+			return { success: true };
 		}
 
-		// 2. Route to appropriate agent (via Durable Object)
 		const result = await routeToAgent(email, deps.env);
 
 		if (!result.success || !result.reply) {
 			throw new Error(result.error || "Agent failed to generate reply");
 		}
 
-		// 3. Send email reply
 		const sendResult = await sendEmailReply(deps.inbound, result.reply);
 		if (!sendResult.success) {
 			throw new Error(sendResult.error || "Failed to send email");
 		}
 
-		// 4. Track metrics
 		const processingTime = Date.now() - startTime;
 		await Promise.all([
-			incrementEmailCount(deps.redis),
-			trackAgentUsage(deps.redis, agentName, processingTime),
+			incrementEmailCount(deps.kv),
+			trackAgentUsage(deps.kv, agentName, processingTime),
 		]);
 
 		console.log(
@@ -82,18 +78,23 @@ export async function processEmail(
 			error instanceof Error ? error.message : "Unknown error";
 		console.error(`Failed to process email ${email.id}:`, error);
 
-		// Try to send error email to user
-		try {
-			await sendErrorEmail(
-				deps.inbound,
-				email.from.email,
-				email.subject,
-				email.messageId,
-				"We encountered a technical issue processing your request. Please try again.",
-				`noreply@${deps.env.ALLOWED_DOMAIN}`,
+		if (deps.notifyOnError !== false) {
+			try {
+				await sendErrorEmail(
+					deps.inbound,
+					email.from.email,
+					email.subject,
+					email.messageId,
+					"We tried multiple times to process your email but kept hitting a technical issue. Please try sending it again in a few minutes.",
+					`noreply@${deps.env.ALLOWED_DOMAIN}`,
+				);
+			} catch (sendError) {
+				console.error("Failed to send error email:", sendError);
+			}
+		} else {
+			console.log(
+				`Skipping user error email for ${email.id} (non-final attempt)`,
 			);
-		} catch (sendError) {
-			console.error("Failed to send error email:", sendError);
 		}
 
 		return { success: false, error: errorMessage };

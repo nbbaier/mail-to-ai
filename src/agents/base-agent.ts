@@ -2,9 +2,11 @@
  * Base agent class for all email agents using Cloudflare Agents SDK
  */
 
+import { type AnthropicProvider, createAnthropic } from "@ai-sdk/anthropic";
 import { Agent } from "agents";
-import Anthropic from "@anthropic-ai/sdk";
-import type { AgentResult, EmailReply, ParsedEmail, Env } from "../types";
+import { generateText, type Tool } from "ai";
+import { marked } from "marked";
+import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
 
 /**
  * State stored in each agent instance
@@ -24,6 +26,12 @@ export abstract class BaseAgent extends Agent<Env, EmailAgentState> {
 	initialState: EmailAgentState = {
 		conversationHistory: [],
 	};
+
+	protected get anthropic(): AnthropicProvider {
+		return createAnthropic({
+			apiKey: this.env.ANTHROPIC_API_KEY,
+		});
+	}
 
 	/**
 	 * Each agent must implement its system prompt
@@ -45,8 +53,8 @@ export abstract class BaseAgent extends Agent<Env, EmailAgentState> {
 	/**
 	 * Override for agents that need tools (web search, etc.)
 	 */
-	protected getTools(): Anthropic.Tool[] {
-		return [];
+	protected getTools(): Record<string, Tool> {
+		return {};
 	}
 
 	/**
@@ -95,7 +103,6 @@ ${email.body}`.trim();
 	 * Process the email and generate a response
 	 */
 	async process(email: ParsedEmail): Promise<string> {
-		const anthropic = new Anthropic({ apiKey: this.env.ANTHROPIC_API_KEY });
 		const tools = this.getTools();
 		const userMessage = this.buildUserMessage(email);
 
@@ -109,32 +116,26 @@ ${email.body}`.trim();
 			lastProcessedAt: new Date().toISOString(),
 		});
 
-		const response = await anthropic.messages.create({
-			model: "claude-sonnet-4-20250514",
-			max_tokens: 4096,
+		const { text: responseText } = await generateText({
+			model: this.anthropic("claude-haiku-4-5"),
+			maxOutputTokens: 4096,
 			system: this.getSystemPrompt(),
-			messages: this.state.conversationHistory.map((msg) => ({
-				role: msg.role,
-				content: msg.content,
-			})),
-			...(tools.length > 0 && { tools }),
+			messages: this.state.conversationHistory,
+			tools,
 		});
 
-		// Extract text from response
-		const textBlock = response.content.find((block) => block.type === "text");
-		const responseText =
-			textBlock?.text || "Sorry, I could not generate a response.";
+		const finalText = responseText || "Sorry, I could not generate a response.";
 
 		// Store assistant response in history
 		this.setState({
 			...this.state,
 			conversationHistory: [
 				...this.state.conversationHistory,
-				{ role: "assistant", content: responseText },
+				{ role: "assistant", content: finalText },
 			],
 		});
 
-		return responseText;
+		return finalText;
 	}
 
 	/**
@@ -171,25 +172,9 @@ ${email.body}`.trim();
 	 * Convert plain text response to HTML
 	 */
 	protected formatAsHtml(text: string): string {
-		// Convert markdown-style formatting
-		const html = text
-			// Code blocks
-			.replace(/```(\w*)\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
-			// Inline code
-			.replace(/`([^`]+)`/g, "<code>$1</code>")
-			// Bold
-			.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-			// Italic
-			.replace(/\*([^*]+)\*/g, "<em>$1</em>")
-			// Links
-			.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-
-		// Convert paragraphs
-		const paragraphs = html.split("\n\n");
-		const htmlParagraphs = paragraphs.map((p) => {
-			// Don't wrap pre blocks in paragraphs
-			if (p.includes("<pre>")) return p;
-			return `<p>${p.replace(/\n/g, "<br>")}</p>`;
+		const html = marked(text, {
+			breaks: true,
+			gfm: true, // GitHub Flavored Markdown (includes checklists)
 		});
 
 		return `<!DOCTYPE html>
@@ -204,6 +189,12 @@ ${email.body}`.trim();
       max-width: 600px;
     }
     p { margin: 1em 0; }
+    h1 { font-size: 1.5em; margin: 1.2em 0 0.6em; }
+    h2 { font-size: 1.3em; margin: 1.1em 0 0.5em; }
+    h3 { font-size: 1.1em; margin: 1em 0 0.4em; }
+    ul { margin: 0.5em 0; padding-left: 1.5em; }
+    li { margin: 0.3em 0; }
+    hr { margin: 1.5em 0; border: none; border-top: 1px solid #ddd; }
     code {
       background: #f4f4f4;
       padding: 2px 6px;
@@ -218,10 +209,11 @@ ${email.body}`.trim();
     }
     pre code { background: none; padding: 0; }
     a { color: #0066cc; }
+    input[type="checkbox"] { margin-right: 0.5em; }
   </style>
 </head>
 <body>
-  ${htmlParagraphs.join("\n  ")}
+  ${html}
 
   <hr style="margin: 2em 0; border: none; border-top: 1px solid #ddd;">
   <p style="color: #666; font-size: 0.9em;">
