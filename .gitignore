@@ -32,5 +32,8 @@ Thumbs.db
 yarn-debug.log*
 yarn-error.log*
 
+# TypeScript
+*.tsbuildinfo
+.alchemy/
 # bv (beads viewer) local config and caches
 .bv/
