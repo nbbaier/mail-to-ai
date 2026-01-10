@@ -4,7 +4,7 @@
 
 import { type AnthropicProvider, createAnthropic } from "@ai-sdk/anthropic";
 import { Agent } from "agents";
-import { generateText, type Tool } from "ai";
+import { type CoreMessage, type FilePart, type ImagePart, type TextPart, generateText, type Tool } from "ai";
 import { marked } from "marked";
 import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
 
@@ -12,10 +12,7 @@ import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
  * State stored in each agent instance
  */
 export interface EmailAgentState {
-	conversationHistory: Array<{
-		role: "user" | "assistant";
-		content: string;
-	}>;
+	conversationHistory: CoreMessage[];
 	lastProcessedAt?: string;
 }
 
@@ -104,14 +101,41 @@ ${email.body}`.trim();
 	 */
 	async process(email: ParsedEmail): Promise<string> {
 		const tools = this.getTools();
-		const userMessage = this.buildUserMessage(email);
+		const userMessageText = this.buildUserMessage(email);
+
+		const content: Array<TextPart | ImagePart | FilePart> = [
+			{ type: "text", text: userMessageText },
+		];
+
+		// Process attachments
+		if (email.attachments && email.attachments.length > 0) {
+			for (const attachment of email.attachments) {
+				if (attachment.url) {
+					// Check if it's an image
+					if (attachment.contentType.startsWith("image/")) {
+						content.push({
+							type: "image",
+							image: attachment.url,
+							mediaType: attachment.contentType,
+						});
+					} else {
+						// Treat as generic file
+						content.push({
+							type: "file",
+							data: attachment.url,
+							mediaType: attachment.contentType,
+						});
+					}
+				}
+			}
+		}
 
 		// Add to conversation history
 		this.setState({
 			...this.state,
 			conversationHistory: [
 				...this.state.conversationHistory,
-				{ role: "user", content: userMessage },
+				{ role: "user", content },
 			],
 			lastProcessedAt: new Date().toISOString(),
 		});
