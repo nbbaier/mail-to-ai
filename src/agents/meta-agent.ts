@@ -5,7 +5,7 @@
  * e.g., "write-haiku-about-cats@domain.com" creates an agent that writes haikus about cats
  */
 
-import { type FilePart, type ImagePart, type TextPart, generateText } from "ai";
+import { generateText } from "ai";
 import type { ParsedEmail } from "../types";
 import {
 	cacheAgentPrompt,
@@ -182,35 +182,8 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 			);
 		}
 
-		// Build the user message
-		const userMessageText = this.buildUserMessage(email);
-
-		const content: Array<TextPart | ImagePart | FilePart> = [
-			{ type: "text", text: userMessageText },
-		];
-
-		// Process attachments
-		if (email.attachments && email.attachments.length > 0) {
-			for (const attachment of email.attachments) {
-				if (attachment.url) {
-					// Check if it's an image
-					if (attachment.contentType.startsWith("image/")) {
-						content.push({
-							type: "image",
-							image: attachment.url,
-							mediaType: attachment.contentType,
-						});
-					} else {
-						// Treat as generic file
-						content.push({
-							type: "file",
-							data: attachment.url,
-							mediaType: attachment.contentType,
-						});
-					}
-				}
-			}
-		}
+		// Build the user message content
+		const content = await this.buildMessageContent(email);
 
 		// Add to conversation history
 		this.setState({

@@ -64,10 +64,8 @@ Today's date is ${new Date().toLocaleDateString()}.`;
 	async process(email: ParsedEmail): Promise<string> {
 		const startTime = Date.now();
 
-		// Use base class processing
 		const result = await super.process(email);
 
-		// Structured logging
 		console.log(
 			JSON.stringify({
 				agent: "SummarizeAgent",

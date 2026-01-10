@@ -3,7 +3,7 @@
  */
 
 import { anthropic } from "@ai-sdk/anthropic";
-import { type FilePart, type ImagePart, type TextPart, generateText, type Tool } from "ai";
+import { generateText, type Tool } from "ai";
 import type { ParsedEmail } from "../types";
 import { BaseAgent } from "./base-agent";
 
@@ -69,34 +69,7 @@ Today's date is ${new Date().toLocaleDateString()}.`;
 	async process(email: ParsedEmail): Promise<string> {
 		const startTime = Date.now();
 		const tools = this.getTools();
-		const userMessageText = this.buildUserMessage(email);
-
-		const content: Array<TextPart | ImagePart | FilePart> = [
-			{ type: "text", text: userMessageText },
-		];
-
-		// Process attachments
-		if (email.attachments && email.attachments.length > 0) {
-			for (const attachment of email.attachments) {
-				if (attachment.url) {
-					// Check if it's an image
-					if (attachment.contentType.startsWith("image/")) {
-						content.push({
-							type: "image",
-							image: attachment.url,
-							mediaType: attachment.contentType,
-						});
-					} else {
-						// Treat as generic file
-						content.push({
-							type: "file",
-							data: attachment.url,
-							mediaType: attachment.contentType,
-						});
-					}
-				}
-			}
-		}
+		const content = await this.buildMessageContent(email);
 
 		// Add to conversation history
 		this.setState({
