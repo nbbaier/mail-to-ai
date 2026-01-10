@@ -4,7 +4,14 @@
 
 import { type AnthropicProvider, createAnthropic } from "@ai-sdk/anthropic";
 import { Agent } from "agents";
-import { generateText, type Tool } from "ai";
+import {
+	type FilePart,
+	generateText,
+	type ImagePart,
+	type ModelMessage,
+	type TextPart,
+	type Tool,
+} from "ai";
 import { marked } from "marked";
 import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
 
@@ -12,10 +19,7 @@ import type { AgentResult, EmailReply, Env, ParsedEmail } from "../types";
  * State stored in each agent instance
  */
 export interface EmailAgentState {
-	conversationHistory: Array<{
-		role: "user" | "assistant";
-		content: string;
-	}>;
+	conversationHistory: ModelMessage[];
 	lastProcessedAt?: string;
 }
 
@@ -104,14 +108,14 @@ ${email.body}`.trim();
 	 */
 	async process(email: ParsedEmail): Promise<string> {
 		const tools = this.getTools();
-		const userMessage = this.buildUserMessage(email);
+		const content = await this.buildMessageContent(email);
 
 		// Add to conversation history
 		this.setState({
 			...this.state,
 			conversationHistory: [
 				...this.state.conversationHistory,
-				{ role: "user", content: userMessage },
+				{ role: "user", content },
 			],
 			lastProcessedAt: new Date().toISOString(),
 		});
@@ -136,6 +140,58 @@ ${email.body}`.trim();
 		});
 
 		return finalText;
+	}
+
+	/**
+	 * Build the content array for the user message, including text and attachments
+	 */
+	protected async buildMessageContent(
+		email: ParsedEmail,
+	): Promise<Array<TextPart | ImagePart | FilePart>> {
+		const userMessageText = this.buildUserMessage(email);
+		const content: Array<TextPart | ImagePart | FilePart> = [
+			{ type: "text", text: userMessageText },
+		];
+
+		if (email.attachments && email.attachments.length > 0) {
+			for (const attachment of email.attachments) {
+				if (attachment.url) {
+					try {
+						// Fetch attachment content
+						const response = await fetch(attachment.url);
+						if (!response.ok) {
+							console.error(
+								`Failed to fetch attachment from ${attachment.url}: ${response.statusText}`,
+							);
+							continue;
+						}
+
+						const arrayBuffer = await response.arrayBuffer();
+						const data = new Uint8Array(arrayBuffer);
+
+						if (attachment.contentType.startsWith("image/")) {
+							content.push({
+								type: "image",
+								image: data,
+							});
+						} else {
+							content.push({
+								type: "file",
+								data,
+								mediaType: attachment.contentType,
+							});
+						}
+					} catch (error) {
+						console.error(
+							`Error processing attachment ${attachment.filename}:`,
+							error,
+						);
+					}
+				}
+			}
+		}
+
+		return content;
 	}
 
 	/**

@@ -182,15 +182,15 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 			);
 		}
 
-		// Build the user message
-		const userMessage = this.buildUserMessage(email);
+		// Build the user message content
+		const content = await this.buildMessageContent(email);
 
 		// Add to conversation history
 		this.setState({
 			...this.state,
 			conversationHistory: [
 				...this.state.conversationHistory,
-				{ role: "user", content: userMessage },
+				{ role: "user", content },
 			],
 			lastProcessedAt: new Date().toISOString(),
 		});
@@ -200,10 +200,7 @@ Output ONLY the system prompt text, nothing else. Do not include any explanation
 			model: this.anthropic("claude-sonnet-4-20250514"),
 			maxOutputTokens: 4096,
 			system: this.cachedSystemPrompt,
-			messages: this.state.conversationHistory.map((msg) => ({
-				role: msg.role,
-				content: msg.content,
-			})),
+			messages: this.state.conversationHistory,
 		});
 
 		const finalText = responseText || "Sorry, I could not generate a response.";

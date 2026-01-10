@@ -69,14 +69,14 @@ Today's date is ${new Date().toLocaleDateString()}.`;
 	async process(email: ParsedEmail): Promise<string> {
 		const startTime = Date.now();
 		const tools = this.getTools();
-		const userMessage = this.buildUserMessage(email);
+		const content = await this.buildMessageContent(email);
 
 		// Add to conversation history
 		this.setState({
 			...this.state,
 			conversationHistory: [
 				...this.state.conversationHistory,
-				{ role: "user", content: userMessage },
+				{ role: "user", content },
 			],
 			lastProcessedAt: new Date().toISOString(),
 		});
@@ -85,10 +85,7 @@ Today's date is ${new Date().toLocaleDateString()}.`;
 			model: this.anthropic("claude-sonnet-4-5-20250929"),
 			maxOutputTokens: 4096,
 			system: this.getSystemPrompt(),
-			messages: this.state.conversationHistory.map((msg) => ({
-				role: msg.role,
-				content: msg.content,
-			})),
+			messages: this.state.conversationHistory,
 			tools,
 		});
 
