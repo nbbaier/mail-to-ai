@@ -6,6 +6,7 @@ const app = await alchemy("mail-to-ai-website", {
 	stage: process.env.ALCHEMY_STAGE ?? "dev",
 	stateStore: (scope) => new CloudflareStateStore(scope),
 	password: process.env.ALCHEMY_PASSWORD,
+	adopt: true,
 });
 
 export const website = await Vite("website", {

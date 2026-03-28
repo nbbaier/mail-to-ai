@@ -19,23 +19,19 @@ const app = await alchemy("mail-to-ai", {
 	stage: process.env.ALCHEMY_STAGE ?? "dev",
 	stateStore: (scope) => new CloudflareStateStore(scope),
 	password: process.env.ALCHEMY_PASSWORD,
+	adopt: true,
 });
 
-// KV namespace for caching and rate limiting
 export const cache = await KVNamespace("mta-cache_kv", {
 	title: `${app.name}-${app.stage}-cache`,
-	adopt: true,
 });
 
-// Dead letter queue for failed messages
 export const emailDLQ = await Queue("mta-email_dlq", {
 	name: `${app.name}-${app.stage}-email-processing-dlq`,
-	adopt: true,
 });
 
 export const emailQueue = await Queue("mta-email_queue", {
 	name: `${app.name}-${app.stage}-email-processing`,
-	adopt: true,
 });
 
 export const echoAgent = DurableObjectNamespace<EchoAgent>("mta-echo_agent", {
@@ -70,9 +66,11 @@ export const metaAgent = DurableObjectNamespace<MetaAgent>("mta-meta_agent", {
 });
 
 // Main worker
+
 export const worker = await Worker("mail-to-ai", {
 	name: `${app.name}-${app.stage}`,
-	domains: ["api.mail-to-ai.com"],
+	domains:
+		process.env.ALCHEMY_STAGE === "prod" ? ["api.mail-to-ai.com"] : undefined,
 	entrypoint: "src/index.ts",
 	compatibilityDate: "2024-12-01",
 	compatibilityFlags: ["nodejs_compat"],
